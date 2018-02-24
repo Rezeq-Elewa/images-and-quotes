@@ -70,6 +70,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
                 index++;
                 setNavigationArrowsVisibility();
                 loadImage();
+                adView.loadAd(new AdRequest.Builder().build());
             }
         });
 
@@ -79,6 +80,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
                 index--;
                 setNavigationArrowsVisibility();
                 loadImage();
+                adView.loadAd(new AdRequest.Builder().build());
             }
         });
 
@@ -111,7 +113,6 @@ public class ImageDisplayActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 menu.close(true);
-                //TODO add image share code
                 Picasso.with(ImageDisplayActivity.this)
                         .load(images.get(index).getImageURL())
                         .into(new Target() {
