@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -34,7 +35,7 @@ public class NewMainActivity extends AppCompatActivity {
     private InterstitialAd mInterstitialAd;
     String oldestPostId ;
     ArrayList<Image> images;
-    int clickedIndex = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +71,16 @@ public class NewMainActivity extends AppCompatActivity {
         ImagesAdapter adapter = new ImagesAdapter(images , this);
         rvImages.setLayoutManager(layoutManager);
         rvImages.setAdapter(adapter);
+        rvImages.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if(llMenu.getVisibility() == View.VISIBLE){
+                    llMenu.setVisibility(View.GONE);
+                    return true;
+                }
+                return false;
+            }
+        });
 
         ivMenu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,9 +136,9 @@ public class NewMainActivity extends AppCompatActivity {
             @Override
             public void onAdClosed() {
                 // Code to be executed when when the interstitial ad is closed.
-                Intent intent = new Intent(NewMainActivity.this, ImageDisplayActivity.class);
-                intent.putExtra("image",images.get(clickedIndex));
-                startActivity(intent);
+//                Intent intent = new Intent(NewMainActivity.this, ImageDisplayActivity.class);
+//                intent.putExtra("image",images.get(clickedIndex));
+//                startActivity(intent);
                 mInterstitialAd.loadAd(new AdRequest.Builder().build());
             }
         });
@@ -186,6 +197,12 @@ public class NewMainActivity extends AppCompatActivity {
         //No call for super(). Bug on API Level > 11.
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        adView.loadAd(new AdRequest.Builder().build());
+    }
+
     private void toggleMenu(){
         if(llMenu.getVisibility() == View.GONE){
             llMenu.setVisibility(View.VISIBLE);
@@ -195,8 +212,15 @@ public class NewMainActivity extends AppCompatActivity {
     }
 
     public void imageClicked(int index){
-        clickedIndex = index;
+        if(llMenu.getVisibility() == View.VISIBLE){
+            llMenu.setVisibility(View.GONE);
+            return;
+        }
         Toast.makeText(NewMainActivity.this,"image "+index,Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(NewMainActivity.this, ImageDisplayActivity.class);
+        intent.putExtra("images",images);
+        intent.putExtra("index",index);
+        startActivity(intent);
         mInterstitialAd.show();
     }
 }
