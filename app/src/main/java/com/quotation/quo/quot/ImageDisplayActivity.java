@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -85,7 +86,6 @@ public class ImageDisplayActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 menu.close(true);
-                //TODO add image download code
                 Picasso.with(ImageDisplayActivity.this)
                         .load(images.get(index).getImageURL())
                         .into(new Target() {
@@ -112,6 +112,32 @@ public class ImageDisplayActivity extends AppCompatActivity {
             public void onClick(View view) {
                 menu.close(true);
                 //TODO add image share code
+                Picasso.with(ImageDisplayActivity.this)
+                        .load(images.get(index).getImageURL())
+                        .into(new Target() {
+                            @Override
+                            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                                final String path = saveImageForShare(bitmap);
+                                shareImage(path);
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        deleteImage(path);
+                                    }
+                                },120000);
+
+                            }
+
+                            @Override
+                            public void onBitmapFailed(Drawable errorDrawable) {
+                                Toast.makeText(ImageDisplayActivity.this,"Error sharing the image !",Toast.LENGTH_LONG).show();
+                            }
+
+                            @Override
+                            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                            }
+                        });
             }
         });
 
@@ -167,6 +193,30 @@ public class ImageDisplayActivity extends AppCompatActivity {
         }
     }
 
+    private String saveImageForShare(Bitmap image) {
+        String savedImagePath = null;
+        Calendar calendar = Calendar.getInstance();
+        String imageFileName = "TEMP_" + String.valueOf(calendar.getTimeInMillis()) + ".jpg";
+        File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                + "/"+getString(R.string.app_name));
+        boolean success = true;
+        if (!storageDir.exists()) {
+            success = storageDir.mkdirs();
+        }
+        if (success) {
+            File imageFile = new File(storageDir, imageFileName);
+            savedImagePath = imageFile.getAbsolutePath();
+            try {
+                OutputStream fOut = new FileOutputStream(imageFile);
+                image.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
+                fOut.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return savedImagePath;
+    }
+
     private void galleryAddPic(String imagePath) {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(imagePath);
@@ -174,4 +224,21 @@ public class ImageDisplayActivity extends AppCompatActivity {
         mediaScanIntent.setData(contentUri);
         sendBroadcast(mediaScanIntent);
     }
+
+    private void shareImage(String imagePath){
+        File f = new File(imagePath);
+        Uri contentUri = Uri.fromFile(f);
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
+        shareIntent.setType("image/jpeg");
+        startActivity(Intent.createChooser(shareIntent, "Share Image"));
+    }
+
+    private void deleteImage(String path) {
+        File file = new File(path);
+        if (file.exists())
+            file.delete();
+    }
+
 }
