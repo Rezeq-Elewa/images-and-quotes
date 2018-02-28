@@ -10,23 +10,23 @@ import android.os.Parcelable;
 
 public class Image implements Parcelable{
     private int id;
-    private String imageURL;
+    private String url;
     private String textAr;
     private String textEn;
 
     public Image() {
     }
 
-    public Image(int id, String imageURL, String textAr, String textEn) {
+    public Image(int id, String url, String textAr, String textEn) {
         this.id = id;
-        this.imageURL = imageURL;
+        this.url = url;
         this.textAr = textAr;
         this.textEn = textEn;
     }
 
     protected Image(Parcel in) {
         id = in.readInt();
-        imageURL = in.readString();
+        url = in.readString();
         textAr = in.readString();
         textEn = in.readString();
     }
@@ -34,7 +34,7 @@ public class Image implements Parcelable{
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
-        dest.writeString(imageURL);
+        dest.writeString(url);
         dest.writeString(textAr);
         dest.writeString(textEn);
     }
@@ -64,12 +64,12 @@ public class Image implements Parcelable{
         this.id = id;
     }
 
-    public String getImageURL() {
-        return imageURL;
+    public String getUrl() {
+        return url;
     }
 
-    public void setImageURL(String imageURL) {
-        this.imageURL = imageURL;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public String getTextAr() {

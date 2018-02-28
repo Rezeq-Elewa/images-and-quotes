@@ -15,7 +15,6 @@
         fab:menu_colorPressed="@color/colorPrimaryDark"
         fab:menu_colorRipple="#99FFFFFF"
         fab:menu_fab_hide_animation="@anim/fab_scale_down"
-        fab:menu_fab_label="Select Action"
         fab:menu_fab_show_animation="@anim/fab_scale_up"
         fab:menu_icon="@drawable/fab_add"
         fab:menu_labels_colorNormal="@color/colorPrimaryDark"

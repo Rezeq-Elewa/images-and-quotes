@@ -29,8 +29,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
 
     int index;
     ArrayList<Image> images;
-    ImageView ivImage, ivBack, ivNext, ivMenu;
-    CustomTextView tvTitle;
+    ImageView ivImage, ivBack, ivNext;
     AdView adView;
     FloatingActionMenu menu;
     com.github.clans.fab.FloatingActionButton fabDownload, fabShare;
@@ -46,8 +45,6 @@ public class ImageDisplayActivity extends AppCompatActivity {
             images = args.getParcelableArrayList("images");
             index = args.getInt("index", 0);
         }
-        ivMenu = findViewById(R.id.iv_menu);
-        tvTitle = findViewById(R.id.tv_title);
         ivImage = findViewById(R.id.iv_image);
         ivBack = findViewById(R.id.iv_back);
         ivNext = findViewById(R.id.iv_next);
@@ -57,11 +54,9 @@ public class ImageDisplayActivity extends AppCompatActivity {
         fabDownload = findViewById(R.id.fab_download);
         fabShare = findViewById(R.id.fab_share);
 
-        tvTitle.setText(getString(R.string.app_name));
-        ivMenu.setVisibility(View.GONE);
         menu.setClosedOnTouchOutside(true);
 
-        MobileAds.initialize(this, "ca-app-pub-4123514517726578~5581013211");
+        MobileAds.initialize(this, getString(R.string.admob_app_id));
         adView.loadAd(new AdRequest.Builder().build());
 
         ivNext.setOnClickListener(new View.OnClickListener() {
@@ -89,7 +84,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
             public void onClick(View view) {
                 menu.close(true);
                 Picasso.with(ImageDisplayActivity.this)
-                        .load(images.get(index).getImageURL())
+                        .load(images.get(index).getUrl())
                         .into(new Target() {
                             @Override
                             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -114,7 +109,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
             public void onClick(View view) {
                 menu.close(true);
                 Picasso.with(ImageDisplayActivity.this)
-                        .load(images.get(index).getImageURL())
+                        .load(images.get(index).getUrl())
                         .into(new Target() {
                             @Override
                             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -144,11 +139,12 @@ public class ImageDisplayActivity extends AppCompatActivity {
 
         loadImage();
         setNavigationArrowsVisibility();
+
     }
 
     private void loadImage(){
         Picasso.with(this)
-                .load(images.get(index).getImageURL())
+                .load(images.get(index).getUrl())
                 .placeholder(R.color.cardview_dark_background)
                 .into(ivImage);
     }

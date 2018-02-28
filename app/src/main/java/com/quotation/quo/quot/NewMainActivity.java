@@ -1,15 +1,20 @@
 package com.quotation.quo.quot;
 
 import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.AdListener;
@@ -24,10 +29,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
-public class NewMainActivity extends AppCompatActivity {
+public class NewMainActivity extends AppCompatActivity implements LoadMoreListener {
 
-    ImageView ivMenu;
+    ImageView ivMenu, ivList, ivGrid;
     CustomTextView tvTitle, tvRandom, tvOldest, tvNewest;
     LinearLayout llMenu, llRate, llOtherApps;
     RecyclerView rvImages;
@@ -35,8 +42,13 @@ public class NewMainActivity extends AppCompatActivity {
     private InterstitialAd mInterstitialAd;
     String oldestPostId ;
     ArrayList<Image> images;
+    ProgressBar loadMoreProgressBar;
 
+    DatabaseReference databaseReference;
 
+    boolean isLoading = false;
+
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +57,8 @@ public class NewMainActivity extends AppCompatActivity {
 
 
         ivMenu = findViewById(R.id.iv_menu);
+        ivList = findViewById(R.id.display_list);
+        ivGrid = findViewById(R.id.display_grid);
         tvTitle = findViewById(R.id.tv_title);
         tvRandom = findViewById(R.id.tv_random);
         tvOldest = findViewById(R.id.tv_oldest);
@@ -54,10 +68,12 @@ public class NewMainActivity extends AppCompatActivity {
         llRate = findViewById(R.id.ll_rate);
         llOtherApps = findViewById(R.id.ll_other_apps);
         rvImages = findViewById(R.id.rv_list);
+        loadMoreProgressBar = findViewById(R.id.load_more_progress_bar);
 
 
         tvTitle.setText(getString(R.string.app_name));
         llMenu.setVisibility(View.GONE);
+        loadMoreProgressBar.setVisibility(View.GONE);
 
         images = new ArrayList<>();
         images.add(new Image(1,"https://assets.vogue.com/photos/5891602d8c64075803acfcbb/master/w_780,c_limit/jennifer-lawrence.jpg","صورة 1","Jennifer Lawrence"));
@@ -68,7 +84,8 @@ public class NewMainActivity extends AppCompatActivity {
 
 
         StaggeredGridLayoutManager layoutManager =  new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        ImagesAdapter adapter = new ImagesAdapter(images , this);
+        ImagesAdapter adapter = new ImagesAdapter(images , this, "grid");
+        adapter.setLoadMoreListener(this);
         rvImages.setLayoutManager(layoutManager);
         rvImages.setAdapter(adapter);
         rvImages.setOnTouchListener(new View.OnTouchListener() {
@@ -92,7 +109,22 @@ public class NewMainActivity extends AppCompatActivity {
         llRate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(NewMainActivity.this,"Rate",Toast.LENGTH_LONG).show();
+                Uri uri = Uri.parse("market://details?id=" + NewMainActivity.this.getPackageName());
+                Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
+                            Intent.FLAG_ACTIVITY_NEW_DOCUMENT |
+                            Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                } else {
+                    goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
+                            Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                }
+                try {
+                    startActivity(goToMarket);
+                } catch (ActivityNotFoundException e) {
+                    startActivity(new Intent(Intent.ACTION_VIEW,
+                            Uri.parse("http://play.google.com/store/apps/details?id=" + NewMainActivity.this.getPackageName())));
+                }
                 llMenu.setVisibility(View.GONE);
             }
         });
@@ -105,32 +137,70 @@ public class NewMainActivity extends AppCompatActivity {
             }
         });
 
+        ivGrid.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                rvImages.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+                ImagesAdapter adapter = new ImagesAdapter(images , NewMainActivity.this, "grid");
+                adapter.setLoadMoreListener(NewMainActivity.this);
+                rvImages.setAdapter(adapter);
+                rvImages.getLayoutManager().smoothScrollToPosition(rvImages, null , 0);
+            }
+        });
+
+        ivList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                rvImages.setLayoutManager(new LinearLayoutManager(NewMainActivity.this,LinearLayout.VERTICAL,false));
+                ImagesAdapter adapter = new ImagesAdapter(images , NewMainActivity.this, "list");
+                adapter.setLoadMoreListener(NewMainActivity.this);
+                rvImages.setAdapter(adapter);
+                rvImages.getLayoutManager().smoothScrollToPosition(rvImages, null , 0);
+            }
+        });
+
         tvNewest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(NewMainActivity.this,"Newest",Toast.LENGTH_LONG).show();
+                Collections.sort(images, new Comparator<Image>() {
+                    @Override
+                    public int compare(Image image1, Image image2) {
+                        return image2.getId() - image1.getId();
+                    }
+                });
+                rvImages.getAdapter().notifyDataSetChanged();
+                rvImages.getLayoutManager().smoothScrollToPosition(rvImages, null , 0);
             }
         });
 
         tvOldest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(NewMainActivity.this,"Oldest",Toast.LENGTH_LONG).show();
+                Collections.sort(images, new Comparator<Image>() {
+                    @Override
+                    public int compare(Image image1, Image image2) {
+                        return image1.getId() - image2.getId();
+                    }
+                });
+                rvImages.getAdapter().notifyDataSetChanged();
+                rvImages.getLayoutManager().smoothScrollToPosition(rvImages, null , 0);
             }
         });
 
         tvRandom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(NewMainActivity.this,"Random",Toast.LENGTH_LONG).show();
+                Collections.shuffle(images);
+                rvImages.getAdapter().notifyDataSetChanged();
+                rvImages.getLayoutManager().smoothScrollToPosition(rvImages, null , 0);
             }
         });
 
-        MobileAds.initialize(this, "ca-app-pub-4123514517726578~5581013211");
+        MobileAds.initialize(this, getString(R.string.admob_app_id));
         adView.loadAd(new AdRequest.Builder().build());
 
         mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        mInterstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
         mInterstitialAd.loadAd(new AdRequest.Builder().build());
         mInterstitialAd.setAdListener(new AdListener() {
             @Override
@@ -144,52 +214,73 @@ public class NewMainActivity extends AppCompatActivity {
         });
 
 
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-
-
-        databaseReference.limitToFirst(10).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-
-                    oldestPostId = child.getKey(); ////HERE WE ARE SAVING THE LAST POST_ID FROM URS POST
-
-                    dataSnapshot.getChildrenCount();
-//                    String event_id = dataSnapshot.child("details").child("event_id").getValue().toString();
-
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        databaseReference = FirebaseDatabase.getInstance().getReference("/images");
 
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        isLoading = true;
+        databaseReference.orderByKey().limitToFirst(20).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                isLoading = false;
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    oldestPostId = child.getKey();
 
+                    Image image = child.getValue(Image.class);
+                    if (image != null) {
+                        image.setId(Integer.parseInt(child.getKey()));
+                    }
+                    images.add(image);
+                }
+                rvImages.getAdapter().notifyDataSetChanged();
+            }
 
-//
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.main2, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        switch (item.getItemId()) {
-//            case R.id.menu_help:
-//                Toast.makeText(this, "This is teh option help", Toast.LENGTH_LONG).show();
-//                break;
-//            default:
-//                break;
-//        }
-//        return true;
-//    }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                isLoading = false;
+            }
+        });
+    }
+
+    //Todo load more data
+    @Override
+    public void loadMore() {
+        if(images.size() % 20 != 0 || isLoading)
+            return;
+
+        isLoading = true;
+        loadMoreProgressBar.setVisibility(View.VISIBLE);
+        if(databaseReference != null){
+            databaseReference.orderByKey().startAt(oldestPostId).limitToFirst(20).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+                        oldestPostId = child.getKey(); ////HERE WE ARE SAVING THE LAST POST_ID FROM URS POST
+
+                        Image image = child.getValue(Image.class);
+                        if (image != null) {
+                            image.setId(Integer.parseInt(child.getKey()));
+                        }
+                        images.add(image);
+                    }
+                    isLoading = false;
+                    rvImages.getAdapter().notifyDataSetChanged();
+                    loadMoreProgressBar.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    isLoading = false;
+                    loadMoreProgressBar.setVisibility(View.GONE);
+                }
+            });
+        }
+
+    }
 
     @SuppressLint("MissingSuperCall")
     @Override
@@ -216,11 +307,12 @@ public class NewMainActivity extends AppCompatActivity {
             llMenu.setVisibility(View.GONE);
             return;
         }
-        Toast.makeText(NewMainActivity.this,"image "+index,Toast.LENGTH_LONG).show();
         Intent intent = new Intent(NewMainActivity.this, ImageDisplayActivity.class);
         intent.putExtra("images",images);
         intent.putExtra("index",index);
         startActivity(intent);
         mInterstitialAd.show();
     }
+
 }
+

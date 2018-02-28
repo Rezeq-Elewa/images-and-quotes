@@ -1,11 +1,14 @@
 package com.quotation.quo.quot;
 
+import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -21,6 +24,8 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.MyViewHold
 
     private List<Image> imageList;
     private NewMainActivity activity;
+    private LoadMoreListener loadMoreListener;
+    String type;
 
     class MyViewHolder extends RecyclerView.ViewHolder {
         TextView text;
@@ -37,7 +42,8 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.MyViewHold
     }
 
 
-    public ImagesAdapter(List<Image> imageList, NewMainActivity activity) {
+    public ImagesAdapter(List<Image> imageList, NewMainActivity activity, String type) {
+        this.type = type;
         this.activity = activity;
         this.imageList = imageList;
     }
@@ -46,6 +52,14 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.MyViewHold
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.image_list_item, parent, false);
+        if (type.equalsIgnoreCase("list")) {
+            RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) itemView.getLayoutParams();
+            Resources resources = activity.getResources();
+            DisplayMetrics metrics = resources.getDisplayMetrics();
+            float px = 200 * ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+            params.height = (int) px;
+            itemView.setLayoutParams(params);
+        }
         return new MyViewHolder(itemView);
     }
 
@@ -54,7 +68,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.MyViewHold
         final Image image = imageList.get(position);
         holder.text.setText(image.getTextEn());
         Picasso.with(activity)
-                .load(image.getImageURL())
+                .load(image.getUrl())
                 .placeholder(R.color.cardview_dark_background)
                 .into(holder.image);
 
@@ -64,6 +78,16 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.MyViewHold
                 activity.imageClicked(holder.getAdapterPosition());
             }
         });
+
+        if(position % 20 == 0){
+            if(loadMoreListener != null){
+                loadMoreListener.loadMore();
+            }
+        }
+    }
+
+    public void setLoadMoreListener(LoadMoreListener loadMoreListener){
+        this.loadMoreListener = loadMoreListener;
     }
 
     @Override
