@@ -66,10 +66,11 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.MyViewHold
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int position) {
         final Image image = imageList.get(position);
-        holder.text.setText(image.getTextEn());
+        holder.text.setText(image.getTextEn() + " || "+image.getId());
         Picasso.with(activity)
-                .load(image.getUrl())
+                .load(image.getImageUrl())
                 .placeholder(R.color.cardview_dark_background)
+                .resize(200, 0)
                 .into(holder.image);
 
         holder.view.setOnClickListener(new View.OnClickListener() {
@@ -79,7 +80,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.MyViewHold
             }
         });
 
-        if(position % 20 == 0){
+        if(position + 1 == imageList.size() && (position + 1) % 20 == 0){
             if(loadMoreListener != null){
                 loadMoreListener.loadMore();
             }

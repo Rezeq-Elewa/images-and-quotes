@@ -8,10 +8,13 @@ import android.os.Environment;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -30,6 +33,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
     int index;
     ArrayList<Image> images;
     ImageView ivImage, ivBack, ivNext;
+    CustomTextView tvDescription;
     AdView adView;
     FloatingActionMenu menu;
     com.github.clans.fab.FloatingActionButton fabDownload, fabShare;
@@ -48,11 +52,18 @@ public class ImageDisplayActivity extends AppCompatActivity {
         ivImage = findViewById(R.id.iv_image);
         ivBack = findViewById(R.id.iv_back);
         ivNext = findViewById(R.id.iv_next);
-//        fabDownload = v.findViewById(R.id.fab_download);
+        tvDescription = findViewById(R.id.tv_description);
         adView = findViewById(R.id.adView);
         menu = findViewById(R.id.menu);
         fabDownload = findViewById(R.id.fab_download);
         fabShare = findViewById(R.id.fab_share);
+
+        //TODO remove this line
+        images.get(index).setFullTextEn(images.get(0).getFullTextEn());
+
+        tvDescription.setText(images.get(index).getFullTextEn());
+
+        Log.i("text", tvDescription.getText().toString());
 
         menu.setClosedOnTouchOutside(true);
 
@@ -84,7 +95,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
             public void onClick(View view) {
                 menu.close(true);
                 Picasso.with(ImageDisplayActivity.this)
-                        .load(images.get(index).getUrl())
+                        .load(images.get(index).getImageUrl())
                         .into(new Target() {
                             @Override
                             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -109,7 +120,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
             public void onClick(View view) {
                 menu.close(true);
                 Picasso.with(ImageDisplayActivity.this)
-                        .load(images.get(index).getUrl())
+                        .load(images.get(index).getImageUrl())
                         .into(new Target() {
                             @Override
                             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -143,9 +154,18 @@ public class ImageDisplayActivity extends AppCompatActivity {
     }
 
     private void loadImage(){
-        Picasso.with(this)
-                .load(images.get(index).getUrl())
+//        Picasso.with(this)
+//                .load(images.get(index).getImageUrl())
+//                .placeholder(R.color.cardview_dark_background)
+//                .into(ivImage);
+
+        RequestOptions options = new RequestOptions()
                 .placeholder(R.color.cardview_dark_background)
+                .error(R.color.cardview_dark_background).override(ivImage.getWidth(),0);
+
+        Glide.with(this)
+                .load(images.get(index).getImageUrl())
+                .apply(options)
                 .into(ivImage);
     }
 

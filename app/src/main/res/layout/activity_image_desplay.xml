@@ -1,88 +1,140 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryDark"
-    tools:context=".ImageDisplayActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".ImageDisplayActivity">
 
     <android.support.v7.widget.CardView
         android:id="@+id/cv_main"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
-        app:cardCornerRadius="7dp">
+        app:cardCornerRadius="7dp"
+        app:layout_constraintBottom_toTopOf="@+id/adView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <ImageView
-                android:id="@+id/iv_back"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginStart="24dp"
-                android:padding="4dp"
-                app:srcCompat="@drawable/ic_back_arrow"
-                app:layout_constraintBottom_toTopOf="@+id/adView"
-                app:layout_constraintStart_toStartOf="parent" />
 
-            <ImageView
-                android:id="@+id/iv_next"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="24dp"
-                android:padding="4dp"
-                app:layout_constraintBottom_toTopOf="@+id/adView"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:srcCompat="@drawable/ic_next_arrow" />
-
-            <ImageView
-                android:id="@+id/iv_image"
+            <ScrollView
                 android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginBottom="56dp"
-                android:adjustViewBounds="true"
-                android:scaleType="centerCrop"
-                app:layout_constraintBottom_toTopOf="@+id/adView"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-
-
-            <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/adView"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_marginBottom="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                ads:adSize="BANNER"
-                ads:adUnitId="ca-app-pub-3940256099942544/6300978111"
-                ads:layout_constraintBottom_toBottomOf="parent"
-                ads:layout_constraintEnd_toEndOf="parent"
-                ads:layout_constraintStart_toStartOf="parent"/>
+                android:layout_marginTop="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-            <include
-                android:id="@+id/fabs"
-                layout="@layout/fab_menu"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginRight="8dp"
-                app:layout_constraintBottom_toBottomOf="@+id/iv_image"
-                app:layout_constraintRight_toRightOf="parent" />
+                <android.support.constraint.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <android.support.constraint.ConstraintLayout
+                        android:id="@+id/image_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <ImageView
+                            android:id="@+id/iv_image"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:contentDescription="@string/app_name"
+                            android:minHeight="350dp"
+                            android:scaleType="center"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <include
+                            android:id="@+id/fabs"
+                            layout="@layout/fab_menu"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_marginBottom="8dp"
+                            android:layout_marginEnd="8dp"
+                            app:layout_constraintBottom_toBottomOf="@+id/iv_image"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/iv_image" />
+
+                    </android.support.constraint.ConstraintLayout>
+
+                    <com.quotation.quo.quot.CustomTextView
+                        android:id="@+id/tv_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="58dp"
+                        android:lineSpacingExtra="3dp"
+                        android:text="app description"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/image_layout" />
+
+                    <ImageView
+                        android:id="@+id/iv_back"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:padding="4dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/image_layout"
+                        app:srcCompat="@drawable/ic_back_arrow" />
+
+                    <ImageView
+                        android:id="@+id/iv_next"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginTop="8dp"
+                        android:padding="4dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/image_layout"
+                        app:srcCompat="@drawable/ic_next_arrow" />
+
+                </android.support.constraint.ConstraintLayout>
+            </ScrollView>
+
 
         </android.support.constraint.ConstraintLayout>
 
     </android.support.v7.widget.CardView>
 
-</LinearLayout>
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        app:adUnitId="@string/image_activity_ad_unit_id"
+        app:adSize="SMART_BANNER"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cv_main" />
+
+</android.support.constraint.ConstraintLayout>
 

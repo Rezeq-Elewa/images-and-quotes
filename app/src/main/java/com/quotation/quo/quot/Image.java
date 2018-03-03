@@ -10,33 +10,39 @@ import android.os.Parcelable;
 
 public class Image implements Parcelable{
     private int id;
-    private String url;
+    private String imageUrl;
     private String textAr;
     private String textEn;
+    private String fullTextAr;
+    private String fullTextEn;
 
     public Image() {
     }
 
-    public Image(int id, String url, String textAr, String textEn) {
+    public Image(int id, String imageUrl, String textAr, String textEn) {
         this.id = id;
-        this.url = url;
+        this.imageUrl = imageUrl;
         this.textAr = textAr;
         this.textEn = textEn;
     }
 
     protected Image(Parcel in) {
         id = in.readInt();
-        url = in.readString();
+        imageUrl = in.readString();
         textAr = in.readString();
         textEn = in.readString();
+        fullTextAr = in.readString();
+        fullTextEn = in.readString();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
-        dest.writeString(url);
+        dest.writeString(imageUrl);
         dest.writeString(textAr);
         dest.writeString(textEn);
+        dest.writeString(fullTextAr);
+        dest.writeString(fullTextEn);
     }
 
     @Override
@@ -64,12 +70,12 @@ public class Image implements Parcelable{
         this.id = id;
     }
 
-    public String getUrl() {
-        return url;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public String getTextAr() {
@@ -86,5 +92,21 @@ public class Image implements Parcelable{
 
     public void setTextEn(String textEn) {
         this.textEn = textEn;
+    }
+
+    public String getFullTextAr() {
+        return fullTextAr;
+    }
+
+    public void setFullTextAr(String fullTextAr) {
+        this.fullTextAr = fullTextAr;
+    }
+
+    public String getFullTextEn() {
+        return fullTextEn;
+    }
+
+    public void setFullTextEn(String fullTextEn) {
+        this.fullTextEn = fullTextEn;
     }
 }

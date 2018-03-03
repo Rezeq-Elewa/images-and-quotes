@@ -42,9 +42,13 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
     private InterstitialAd mInterstitialAd;
     String oldestPostId ;
     ArrayList<Image> images;
+    ArrayList<App> apps;
     ProgressBar loadMoreProgressBar;
 
-    DatabaseReference databaseReference;
+    DatabaseReference imagesDatabaseReference;
+    DatabaseReference appsDatabaseReference;
+
+    String category = "0";
 
     boolean isLoading = false;
 
@@ -76,12 +80,14 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
         loadMoreProgressBar.setVisibility(View.GONE);
 
         images = new ArrayList<>();
-        images.add(new Image(1,"https://assets.vogue.com/photos/5891602d8c64075803acfcbb/master/w_780,c_limit/jennifer-lawrence.jpg","صورة 1","Jennifer Lawrence"));
-        images.add(new Image(2,"http://themepack.me/i/c/749x468/media/g/343/emma-stone-theme-1.jpg","صورة 2","Emma Stone"));
-        images.add(new Image(3,"https://data.whicdn.com/images/123636297/large.png","صورة 3","Angelina Jolie"));
-        images.add(new Image(4,"https://photos.vanityfair.com/2014/04/21/53556883158726f16b740128_scarlett-johansson-vanity-fair-ss05.jpg","صورة 4","Scarlett Johansson"));
-        images.add(new Image(5,"http://lagrande.emisorasunidas.com/sites/default/files/images/Sofia-Vergara1.jpg","صورة 5","Sofia Vergara"));
+        //TODO delete these lines after testing
+//        images.add(new Image(1,"https://assets.vogue.com/photos/5891602d8c64075803acfcbb/master/w_780,c_limit/jennifer-lawrence.jpg","صورة 1","Jennifer Lawrence"));
+//        images.add(new Image(2,"http://themepack.me/i/c/749x468/media/g/343/emma-stone-theme-1.jpg","صورة 2","Emma Stone"));
+//        images.add(new Image(3,"https://data.whicdn.com/images/123636297/large.png","صورة 3","Angelina Jolie"));
+//        images.add(new Image(4,"https://photos.vanityfair.com/2014/04/21/53556883158726f16b740128_scarlett-johansson-vanity-fair-ss05.jpg","صورة 4","Scarlett Johansson"));
+//        images.add(new Image(5,"http://lagrande.emisorasunidas.com/sites/default/files/images/Sofia-Vergara1.jpg","صورة 5","Sofia Vergara"));
 
+        apps = new ArrayList<>();
 
         StaggeredGridLayoutManager layoutManager =  new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         ImagesAdapter adapter = new ImagesAdapter(images , this, "grid");
@@ -132,7 +138,9 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
         llOtherApps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(NewMainActivity.this,"Other Apps",Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(NewMainActivity.this, AppsActivity.class);
+                intent.putExtra("apps", apps);
+                startActivity(intent);
                 llMenu.setVisibility(View.GONE);
             }
         });
@@ -205,48 +213,45 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
         mInterstitialAd.setAdListener(new AdListener() {
             @Override
             public void onAdClosed() {
-                // Code to be executed when when the interstitial ad is closed.
-//                Intent intent = new Intent(NewMainActivity.this, ImageDisplayActivity.class);
-//                intent.putExtra("image",images.get(clickedIndex));
-//                startActivity(intent);
                 mInterstitialAd.loadAd(new AdRequest.Builder().build());
             }
         });
 
+        imagesDatabaseReference = FirebaseDatabase.getInstance().getReference("/images/"+category);
+        appsDatabaseReference = FirebaseDatabase.getInstance().getReference("/apps");
 
-        databaseReference = FirebaseDatabase.getInstance().getReference("/images");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                appsDatabaseReference.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        isLoading = false;
+                        for (DataSnapshot child : dataSnapshot.getChildren()) {
+                            App app = child.getValue(App.class);
+                            if (app != null) {
+                                apps.add(app);
+                            }
+                        }
+                        rvImages.getAdapter().notifyDataSetChanged();
+                    }
 
-
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        isLoading = false;
+                    }
+                });
+            }
+        }).start();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         isLoading = true;
-        databaseReference.orderByKey().limitToFirst(20).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                isLoading = false;
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    oldestPostId = child.getKey();
-
-                    Image image = child.getValue(Image.class);
-                    if (image != null) {
-                        image.setId(Integer.parseInt(child.getKey()));
-                    }
-                    images.add(image);
-                }
-                rvImages.getAdapter().notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                isLoading = false;
-            }
-        });
+        readFromDBFirstTime();
     }
 
-    //Todo load more data
     @Override
     public void loadMore() {
         if(images.size() % 20 != 0 || isLoading)
@@ -254,8 +259,9 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
 
         isLoading = true;
         loadMoreProgressBar.setVisibility(View.VISIBLE);
-        if(databaseReference != null){
-            databaseReference.orderByKey().startAt(oldestPostId).limitToFirst(20).addListenerForSingleValueEvent(new ValueEventListener() {
+        if(imagesDatabaseReference != null){
+            String index = String.valueOf(Integer.parseInt(oldestPostId) + 1);
+            imagesDatabaseReference.orderByKey().startAt(index).limitToFirst(20).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
@@ -311,7 +317,33 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
         intent.putExtra("images",images);
         intent.putExtra("index",index);
         startActivity(intent);
-        mInterstitialAd.show();
+        //TODO enable ad
+//        mInterstitialAd.show();
+    }
+
+    public void readFromDBFirstTime(){
+        imagesDatabaseReference.orderByKey().startAt("0").limitToFirst(20).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                isLoading = false;
+                images.clear();
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    oldestPostId = child.getKey();
+
+                    Image image = child.getValue(Image.class);
+                    if (image != null) {
+                        image.setId(Integer.parseInt(child.getKey()));
+                        images.add(image);
+                    }
+                }
+                rvImages.getAdapter().notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                isLoading = false;
+            }
+        });
     }
 
 }
