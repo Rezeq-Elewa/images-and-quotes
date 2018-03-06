@@ -9,7 +9,8 @@ import android.os.Parcelable;
  */
 
 public class App implements Parcelable{
-    private String name;
+    private String nameEn;
+    private String nameAr;
     private String descriptionEn;
     private String descriptionAr;
     private String img;
@@ -19,8 +20,9 @@ public class App implements Parcelable{
     public App() {
     }
 
-    public App(String name, String descriptionEn, String descriptionAr, String img, String url, String packageId) {
-        this.name = name;
+    public App(String nameEn, String nameAr, String descriptionEn, String descriptionAr, String img, String url, String packageId) {
+        this.nameEn = nameEn;
+        this.nameAr = nameAr;
         this.descriptionEn = descriptionEn;
         this.descriptionAr = descriptionAr;
         this.img = img;
@@ -29,7 +31,8 @@ public class App implements Parcelable{
     }
 
     protected App(Parcel in) {
-        name = in.readString();
+        nameEn = in.readString();
+        nameAr = in.readString();
         descriptionEn = in.readString();
         descriptionAr = in.readString();
         img = in.readString();
@@ -39,7 +42,8 @@ public class App implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(name);
+        dest.writeString(nameEn);
+        dest.writeString(nameAr);
         dest.writeString(descriptionEn);
         dest.writeString(descriptionAr);
         dest.writeString(img);
@@ -64,12 +68,20 @@ public class App implements Parcelable{
         }
     };
 
-    public String getName() {
-        return name;
+    public String getNameEn() {
+        return nameEn;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setNameEn(String nameEn) {
+        this.nameEn = nameEn;
+    }
+
+    public String getNameAr() {
+        return nameAr;
+    }
+
+    public void setNameAr(String nameAr) {
+        this.nameAr = nameAr;
     }
 
     public String getDescriptionEn() {
@@ -110,6 +122,14 @@ public class App implements Parcelable{
 
     public void setPackageId(String packageId) {
         this.packageId = packageId;
+    }
+
+    public String getName() {
+        if(MyApplication.language.equalsIgnoreCase("ar")){
+            return getNameAr();
+        } else {
+            return getNameEn();
+        }
     }
 
     public String getDescription(){

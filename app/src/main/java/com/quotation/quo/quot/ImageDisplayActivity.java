@@ -150,14 +150,11 @@ public class ImageDisplayActivity extends AppCompatActivity {
     }
 
     private void loadImage(){
-//        Picasso.with(this)
-//                .load(images.get(index).getImageUrl())
-//                .placeholder(R.color.cardview_dark_background)
-//                .into(ivImage);
 
         RequestOptions options = new RequestOptions()
                 .placeholder(R.color.f)
-                .error(R.color.cardview_dark_background).override(ivImage.getWidth(),0);
+                .error(R.color.cardview_dark_background)
+                .override(ivImage.getWidth(),0);
 
         Glide.with(this)
                 .load(images.get(index).getImageUrl())
