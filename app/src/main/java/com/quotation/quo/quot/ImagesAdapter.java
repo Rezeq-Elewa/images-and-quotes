@@ -11,6 +11,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -66,11 +68,35 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.MyViewHold
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int position) {
         final Image image = imageList.get(position);
-        holder.text.setText(image.getTextEn() + " || "+image.getId());
-        Picasso.with(activity)
+        if(image.getText().isEmpty() || image.getText().equalsIgnoreCase(" ")){
+            holder.text.setVisibility(View.GONE);
+        } else{
+            holder.text.setText(image.getText());
+        }
+//        Picasso.with(activity)
+//                .load(image.getImageUrl())
+//                .placeholder(R.color.cardview_dark_background)
+//                .resize(200, 0)
+//                .centerCrop()
+//                .into(holder.image);
+
+        RequestOptions options;
+        if (type.equalsIgnoreCase("list")){
+            options = new RequestOptions().placeholder(R.color.cardview_dark_background)
+                    .error(R.color.cardview_dark_background)
+                    .override(holder.image.getWidth(),0)
+                    .centerCrop();
+        }else{
+            options = new RequestOptions()
+                    .placeholder(R.color.cardview_dark_background)
+                    .error(R.color.cardview_dark_background)
+                    .override(holder.image.getWidth(),0)
+                    .centerInside();
+        }
+
+        Glide.with(activity)
                 .load(image.getImageUrl())
-                .placeholder(R.color.cardview_dark_background)
-                .resize(200, 0)
+                .apply(options)
                 .into(holder.image);
 
         holder.view.setOnClickListener(new View.OnClickListener() {

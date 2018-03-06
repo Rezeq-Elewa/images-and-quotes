@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">تطبيق اسامة</string>
+    <string name="navigation_drawer_open">القائمة الجانية مفتوحة</string>
+    <string name="navigation_drawer_close">القائمةلاجانبية مغلقة</string>
+    <string name="other_apps">تطبيقات اخرى</string>
+    <string name="application_name">اسم التطبيق</string>
+    <string name="app_description">وصف قصير عن التطبيق</string>
+    <string name="more_great_apps">تطبيقات اخرى</string>
+    <string name="error_downloading_image">خطأ في تنزيل الصورة</string>
+    <string name="error_sharing_image">خطأ في مشاركة الصورة</string>
+    <string name="image_saved">تم حفظ الصورة</string>
+    <string name="share_image">مشاركة الصورة</string>
+    <string name="display_type">طريقة العرض</string>
+    <string name="random">عشوائي</string>
+    <string name="oldest">الأقدم</string>
+    <string name="newest">الأحدث</string>
+    <string name="rate_the_app">قم يتقييم التطبيق</string>
+    <string name="other_grate_apps">تطبيقات أخرى</string>
+    <string name="categories">التصنيفات</string>
+    <string name="image_description">وصف الصورة</string>
+    <string name="category_name">اسم التصنيف</string>
+</resources>

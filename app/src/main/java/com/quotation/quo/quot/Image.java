@@ -109,4 +109,20 @@ public class Image implements Parcelable{
     public void setFullTextEn(String fullTextEn) {
         this.fullTextEn = fullTextEn;
     }
+
+    public String getText(){
+        if(MyApplication.language.equalsIgnoreCase("ar")){
+            return getTextAr();
+        } else {
+            return getTextEn();
+        }
+    }
+
+    public String getFullText(){
+        if(MyApplication.language.equalsIgnoreCase("ar")){
+            return getFullTextAr();
+        } else {
+            return getFullTextEn();
+        }
+    }
 }

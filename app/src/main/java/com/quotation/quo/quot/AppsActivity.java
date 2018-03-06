@@ -12,7 +12,6 @@ import android.support.v7.widget.RecyclerView;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
-import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
 
@@ -31,8 +30,6 @@ public class AppsActivity extends AppCompatActivity {
         tvTitle = findViewById(R.id.tv_title);
         rvApps = findViewById(R.id.rv_apps);
         adView = findViewById(R.id.adView);
-
-        tvTitle.setText(R.string.other_apps);
 
         apps = new ArrayList<>();
         if (getIntent().getExtras() != null){

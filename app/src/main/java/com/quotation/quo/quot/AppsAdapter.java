@@ -51,10 +51,10 @@ public class AppsAdapter extends RecyclerView.Adapter<AppsAdapter.MyViewHolder> 
     public void onBindViewHolder(final AppsAdapter.MyViewHolder holder, int position) {
         final App app = appsList.get(position);
         holder.title.setText(app.getName());
-        holder.description.setText(app.getDescriptionEn());
+        holder.description.setText(app.getDescription());
         Picasso.with(activity)
                 .load(app.getImg())
-                .placeholder(R.color.cardview_dark_background)
+                .placeholder(R.color.f)
                 .into(holder.image);
 
         holder.view.setOnClickListener(new View.OnClickListener() {

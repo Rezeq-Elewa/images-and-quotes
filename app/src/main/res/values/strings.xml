@@ -4,14 +4,30 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="action_settings">Settings</string>
+    <string name="action_settings" translatable="false">Settings</string>
 
     <!-- TODO: change this to real ids -->
-    <string name="admob_app_id">ca-app-pub-4123514517726578~5581013211</string>
-    <string name="main_activity_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="image_activity_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="apps_activity_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="interstitial_ad_unit_id">ca-app-pub-3940256099942544/1033173712</string>
+    <string name="admob_app_id" translatable="false">ca-app-pub-4123514517726578~5581013211</string>
+    <string name="main_activity_ad_unit_id" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="image_activity_ad_unit_id" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="apps_activity_ad_unit_id" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="interstitial_ad_unit_id" translatable="false">ca-app-pub-3940256099942544/1033173712</string>
 
     <string name="other_apps">Other Apps</string>
+    <string name="application_name">Application name</string>
+    <string name="app_description">short description for the application</string>
+    <string name="more_great_apps">More great apps</string>
+    <string name="error_downloading_image">Error while downloading the image !</string>
+    <string name="error_sharing_image">Error sharing the image !</string>
+    <string name="image_saved">Image saved</string>
+    <string name="share_image">Share Image</string>
+    <string name="display_type">Display type</string>
+    <string name="random">Random</string>
+    <string name="oldest">Oldest</string>
+    <string name="newest">Newest</string>
+    <string name="rate_the_app">Rate the app</string>
+    <string name="other_grate_apps">Other grate apps</string>
+    <string name="categories">Categories</string>
+    <string name="image_description">Image Description</string>
+    <string name="category_name">Category name</string>
 </resources>

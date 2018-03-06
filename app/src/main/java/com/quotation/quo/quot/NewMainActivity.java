@@ -36,17 +36,19 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
 
     ImageView ivMenu, ivList, ivGrid;
     CustomTextView tvTitle, tvRandom, tvOldest, tvNewest;
-    LinearLayout llMenu, llRate, llOtherApps;
-    RecyclerView rvImages;
+    LinearLayout llMenu, llRate, llOtherApps, llCategories;
+    RecyclerView rvImages , rvCategories;
     AdView adView;
     private InterstitialAd mInterstitialAd;
     String oldestPostId ;
     ArrayList<Image> images;
     ArrayList<App> apps;
+    ArrayList<Section> sections;
     ProgressBar loadMoreProgressBar;
 
     DatabaseReference imagesDatabaseReference;
     DatabaseReference appsDatabaseReference;
+    DatabaseReference sectionsDatabaseReference;
 
     String category = "0";
 
@@ -71,7 +73,9 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
         llMenu = findViewById(R.id.ll_menu);
         llRate = findViewById(R.id.ll_rate);
         llOtherApps = findViewById(R.id.ll_other_apps);
+        llCategories = findViewById(R.id.ll_categories);
         rvImages = findViewById(R.id.rv_list);
+        rvCategories = findViewById(R.id.rv_categories);
         loadMoreProgressBar = findViewById(R.id.load_more_progress_bar);
 
 
@@ -80,14 +84,8 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
         loadMoreProgressBar.setVisibility(View.GONE);
 
         images = new ArrayList<>();
-        //TODO delete these lines after testing
-//        images.add(new Image(1,"https://assets.vogue.com/photos/5891602d8c64075803acfcbb/master/w_780,c_limit/jennifer-lawrence.jpg","صورة 1","Jennifer Lawrence"));
-//        images.add(new Image(2,"http://themepack.me/i/c/749x468/media/g/343/emma-stone-theme-1.jpg","صورة 2","Emma Stone"));
-//        images.add(new Image(3,"https://data.whicdn.com/images/123636297/large.png","صورة 3","Angelina Jolie"));
-//        images.add(new Image(4,"https://photos.vanityfair.com/2014/04/21/53556883158726f16b740128_scarlett-johansson-vanity-fair-ss05.jpg","صورة 4","Scarlett Johansson"));
-//        images.add(new Image(5,"http://lagrande.emisorasunidas.com/sites/default/files/images/Sofia-Vergara1.jpg","صورة 5","Sofia Vergara"));
-
         apps = new ArrayList<>();
+        sections = new ArrayList<>();
 
         StaggeredGridLayoutManager layoutManager =  new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         ImagesAdapter adapter = new ImagesAdapter(images , this, "grid");
@@ -104,6 +102,11 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
                 return false;
             }
         });
+
+        rvCategories.setLayoutManager( new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
+        rvCategories.setAdapter(new CategoriesAdapter(sections,this));
+
+
 
         ivMenu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,6 +145,17 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
                 intent.putExtra("apps", apps);
                 startActivity(intent);
                 llMenu.setVisibility(View.GONE);
+            }
+        });
+
+        llCategories.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (rvCategories.getVisibility() == View.VISIBLE){
+                    rvCategories.setVisibility(View.GONE);
+                } else {
+                    rvCategories.setVisibility(View.VISIBLE);
+                }
             }
         });
 
@@ -219,6 +233,7 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
 
         imagesDatabaseReference = FirebaseDatabase.getInstance().getReference("/images/"+category);
         appsDatabaseReference = FirebaseDatabase.getInstance().getReference("/apps");
+        sectionsDatabaseReference = FirebaseDatabase.getInstance().getReference("/sections");
 
         new Thread(new Runnable() {
             @Override
@@ -226,14 +241,12 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
                 appsDatabaseReference.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        isLoading = false;
                         for (DataSnapshot child : dataSnapshot.getChildren()) {
                             App app = child.getValue(App.class);
                             if (app != null) {
                                 apps.add(app);
                             }
                         }
-                        rvImages.getAdapter().notifyDataSetChanged();
                     }
 
                     @Override
@@ -243,6 +256,25 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
                 });
             }
         }).start();
+
+        sectionsDatabaseReference.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    Section section = child.getValue(Section.class);
+                    if (section != null) {
+                        section.setId(Integer.parseInt(child.getKey()));
+                        sections.add(section);
+                    }
+                }
+                rvCategories.getAdapter().notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                isLoading = false;
+            }
+        });
     }
 
     @Override
@@ -317,8 +349,16 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
         intent.putExtra("images",images);
         intent.putExtra("index",index);
         startActivity(intent);
-        //TODO enable ad
-//        mInterstitialAd.show();
+        mInterstitialAd.show();
+    }
+
+    public void sectionClicked(int index){
+        category = String.valueOf(sections.get(index).getId());
+        imagesDatabaseReference = FirebaseDatabase.getInstance().getReference("/images/"+category);
+        readFromDBFirstTime();
+        llCategories.performClick();
+        ivMenu.performClick();
+        rvImages.getLayoutManager().smoothScrollToPosition(rvImages, null, 0);
     }
 
     public void readFromDBFirstTime(){

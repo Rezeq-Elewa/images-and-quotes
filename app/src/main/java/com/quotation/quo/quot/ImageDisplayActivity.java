@@ -58,11 +58,6 @@ public class ImageDisplayActivity extends AppCompatActivity {
         fabDownload = findViewById(R.id.fab_download);
         fabShare = findViewById(R.id.fab_share);
 
-        //TODO remove this line
-        images.get(index).setFullTextEn(images.get(0).getFullTextEn());
-
-        tvDescription.setText(images.get(index).getFullTextEn());
-
         Log.i("text", tvDescription.getText().toString());
 
         menu.setClosedOnTouchOutside(true);
@@ -74,9 +69,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 index++;
-                setNavigationArrowsVisibility();
-                loadImage();
-                adView.loadAd(new AdRequest.Builder().build());
+                ImageDisplayActivity.this.onResume();
             }
         });
 
@@ -84,9 +77,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 index--;
-                setNavigationArrowsVisibility();
-                loadImage();
-                adView.loadAd(new AdRequest.Builder().build());
+                ImageDisplayActivity.this.onResume();
             }
         });
 
@@ -104,7 +95,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
 
                             @Override
                             public void onBitmapFailed(Drawable errorDrawable) {
-                                Toast.makeText(ImageDisplayActivity.this,"Error while downloading the image !",Toast.LENGTH_LONG).show();
+                                Toast.makeText(ImageDisplayActivity.this, R.string.error_downloading_image,Toast.LENGTH_LONG).show();
                             }
 
                             @Override
@@ -137,7 +128,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
 
                             @Override
                             public void onBitmapFailed(Drawable errorDrawable) {
-                                Toast.makeText(ImageDisplayActivity.this,"Error sharing the image !",Toast.LENGTH_LONG).show();
+                                Toast.makeText(ImageDisplayActivity.this, R.string.error_sharing_image,Toast.LENGTH_LONG).show();
                             }
 
                             @Override
@@ -148,9 +139,14 @@ public class ImageDisplayActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         loadImage();
         setNavigationArrowsVisibility();
-
+        adView.loadAd(new AdRequest.Builder().build());
     }
 
     private void loadImage(){
@@ -160,13 +156,15 @@ public class ImageDisplayActivity extends AppCompatActivity {
 //                .into(ivImage);
 
         RequestOptions options = new RequestOptions()
-                .placeholder(R.color.cardview_dark_background)
+                .placeholder(R.color.f)
                 .error(R.color.cardview_dark_background).override(ivImage.getWidth(),0);
 
         Glide.with(this)
                 .load(images.get(index).getImageUrl())
                 .apply(options)
                 .into(ivImage);
+
+        tvDescription.setText(images.get(index).getFullText());
     }
 
     private void setNavigationArrowsVisibility(){
@@ -206,7 +204,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
 
             // Add the image to the system gallery
             galleryAddPic(savedImagePath);
-            Toast.makeText(ImageDisplayActivity.this, "Image saved", Toast.LENGTH_LONG).show();
+            Toast.makeText(ImageDisplayActivity.this, R.string.image_saved, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -249,7 +247,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
         shareIntent.setAction(Intent.ACTION_SEND);
         shareIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
         shareIntent.setType("image/jpeg");
-        startActivity(Intent.createChooser(shareIntent, "Share Image"));
+        startActivity(Intent.createChooser(shareIntent, getString(R.string.share_image)));
     }
 
     private void deleteImage(String path) {

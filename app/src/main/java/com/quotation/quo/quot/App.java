@@ -111,4 +111,12 @@ public class App implements Parcelable{
     public void setPackageId(String packageId) {
         this.packageId = packageId;
     }
+
+    public String getDescription(){
+        if(MyApplication.language.equalsIgnoreCase("ar")){
+            return getDescriptionAr();
+        } else {
+            return getDescriptionEn();
+        }
+    }
 }
