@@ -60,7 +60,7 @@ public class AppsActivity extends AppCompatActivity {
             startActivity(goToMarket);
         } catch (ActivityNotFoundException e) {
             startActivity(new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("http://play.google.com/store/apps/details?id=" + apps.get(index).getUrl())));
+                    Uri.parse("http://play.google.com/store/apps/details?id=" + apps.get(index).getPackageId())));
         }
     }
 }

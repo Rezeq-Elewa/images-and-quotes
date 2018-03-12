@@ -38,7 +38,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/app_name"
-                android:textColor="@color/f"
+                android:textColor="@color/white"
                 android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -130,7 +130,7 @@
                 android:padding="8dp"
                 android:text="@string/random"
                 android:textAlignment="center"
-                android:textColor="@color/f" />
+                android:textColor="@color/white" />
 
             <com.quotation.quo.quot.CustomTextView
                 android:id="@+id/tv_oldest"
@@ -142,7 +142,7 @@
                 android:padding="8dp"
                 android:text="@string/oldest"
                 android:textAlignment="center"
-                android:textColor="@color/f" />
+                android:textColor="@color/white" />
 
             <com.quotation.quo.quot.CustomTextView
                 android:id="@+id/tv_newest"
@@ -154,7 +154,7 @@
                 android:padding="8dp"
                 android:text="@string/newest"
                 android:textAlignment="center"
-                android:textColor="@color/f" />
+                android:textColor="@color/white" />
         </LinearLayout>
 
         <LinearLayout
@@ -211,7 +211,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/rate_the_app"
-                    android:textColor="@color/f"
+                    android:textColor="@color/white"
                     android:textSize="18sp" />
             </LinearLayout>
 
@@ -245,7 +245,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/other_grate_apps"
-                    android:textColor="@color/f"
+                    android:textColor="@color/white"
                     android:textSize="18sp" />
             </LinearLayout>
 
@@ -279,7 +279,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/categories"
-                    android:textColor="@color/f"
+                    android:textColor="@color/white"
                     android:textSize="18sp" />
             </LinearLayout>
 

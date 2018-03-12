@@ -10,5 +10,7 @@
     <color name="c">#212030</color>
     <color name="d">#e5ff4e</color>
     <color name="e">#656473</color>
-    <color name="f">#ffffff</color>
+    <color name="white">#ffffff</color>
+    <color name="imageActivityBackground">#171717</color>
+    <color name="imageActivityCardBackground">#222222</color>
 </resources>

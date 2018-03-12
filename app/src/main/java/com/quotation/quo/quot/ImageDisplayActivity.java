@@ -1,11 +1,16 @@
 package com.quotation.quo.quot;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.StrictMode;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,7 +33,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class ImageDisplayActivity extends AppCompatActivity {
+public class ImageDisplayActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback{
 
     int index;
     ArrayList<Image> images;
@@ -68,16 +73,28 @@ public class ImageDisplayActivity extends AppCompatActivity {
         ivNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ivNext.setEnabled(false);
                 index++;
-                ImageDisplayActivity.this.onResume();
+                Intent intent = new Intent(ImageDisplayActivity.this, ImageDisplayActivity.class);
+                intent.putExtra("images",images);
+                intent.putExtra("index",index);
+                startActivity(intent);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                ImageDisplayActivity.this.finish();
             }
         });
 
         ivBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ivBack.setEnabled(false);
                 index--;
-                ImageDisplayActivity.this.onResume();
+                Intent intent = new Intent(ImageDisplayActivity.this, ImageDisplayActivity.class);
+                intent.putExtra("images",images);
+                intent.putExtra("index",index);
+                startActivity(intent);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                ImageDisplayActivity.this.finish();
             }
         });
 
@@ -116,14 +133,15 @@ public class ImageDisplayActivity extends AppCompatActivity {
                             @Override
                             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                                 final String path = saveImageForShare(bitmap);
-                                shareImage(path);
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        deleteImage(path);
-                                    }
-                                },120000);
-
+                                if ( ! path.equalsIgnoreCase("cancel")){
+                                    shareImage(path);
+                                    new Handler().postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            deleteImage(path);
+                                        }
+                                    },120000);
+                                }
                             }
 
                             @Override
@@ -152,7 +170,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
     private void loadImage(){
 
         RequestOptions options = new RequestOptions()
-                .placeholder(R.color.f)
+                .placeholder(R.color.white)
                 .error(R.color.cardview_dark_background)
                 .override(ivImage.getWidth(),0);
 
@@ -179,6 +197,12 @@ public class ImageDisplayActivity extends AppCompatActivity {
     }
 
     private void saveImage(Bitmap image) {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 112);
+                return ;
+            }
+        }
         String savedImagePath;
         Calendar calendar = Calendar.getInstance();
         String imageFileName = "JPEG_" + String.valueOf(calendar.getTimeInMillis()) + ".jpg";
@@ -206,6 +230,12 @@ public class ImageDisplayActivity extends AppCompatActivity {
     }
 
     private String saveImageForShare(Bitmap image) {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 113);
+                return "cancel";
+            }
+        }
         String savedImagePath = null;
         Calendar calendar = Calendar.getInstance();
         String imageFileName = "TEMP_" + String.valueOf(calendar.getTimeInMillis()) + ".jpg";
@@ -238,6 +268,8 @@ public class ImageDisplayActivity extends AppCompatActivity {
     }
 
     private void shareImage(String imagePath){
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
         File f = new File(imagePath);
         Uri contentUri = Uri.fromFile(f);
         Intent shareIntent = new Intent();
@@ -253,4 +285,17 @@ public class ImageDisplayActivity extends AppCompatActivity {
             file.delete();
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 112){
+            if(grantResults[0]== PackageManager.PERMISSION_GRANTED){
+                fabDownload.performClick();
+            }
+        }else if (requestCode == 113){
+            if(grantResults[0]== PackageManager.PERMISSION_GRANTED){
+                fabShare.performClick();
+            }
+        }
+    }
 }

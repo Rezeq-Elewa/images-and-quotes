@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.quotation.quo.quot">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -28,7 +29,12 @@
         <activity
             android:name=".ImageDisplayActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".AppsActivity"></activity>
+        <activity android:name=".AppsActivity" />
+        <activity
+            android:name="com.google.android.gms.ads.AdActivity"
+            android:theme="@style/TranslucentTheme"
+            tools:replace="android:theme"
+            />
     </application>
 
 </manifest>

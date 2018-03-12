@@ -1,19 +1,17 @@
 package com.quotation.quo.quot;
 
 import android.content.res.Resources;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -27,12 +25,11 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.MyViewHold
     private List<Image> imageList;
     private NewMainActivity activity;
     private LoadMoreListener loadMoreListener;
-    String type;
+    private String type;
 
     class MyViewHolder extends RecyclerView.ViewHolder {
         TextView text;
         ImageView image;
-        LinearLayout llText;
         private View view;
 
         MyViewHolder(View view) {
@@ -44,14 +41,15 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.MyViewHold
     }
 
 
-    public ImagesAdapter(List<Image> imageList, NewMainActivity activity, String type) {
+    ImagesAdapter(List<Image> imageList, NewMainActivity activity, String type) {
         this.type = type;
         this.activity = activity;
         this.imageList = imageList;
     }
 
+    @NonNull
     @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.image_list_item, parent, false);
         if (type.equalsIgnoreCase("list")) {
@@ -66,13 +64,8 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.MyViewHold
     }
 
     @Override
-    public void onBindViewHolder(final MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final MyViewHolder holder, int position) {
         final Image image = imageList.get(position);
-        if(image.getText().isEmpty() || image.getText().equalsIgnoreCase(" ")){
-            holder.text.setVisibility(View.GONE);
-        } else{
-            holder.text.setText(image.getText());
-        }
 //        Picasso.with(activity)
 //                .load(image.getImageUrl())
 //                .placeholder(R.color.cardview_dark_background)
@@ -111,9 +104,16 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.MyViewHold
                 loadMoreListener.loadMore();
             }
         }
+
+        if(image.getText().isEmpty() || image.getText().equalsIgnoreCase(" ")){
+            holder.text.setVisibility(View.GONE);
+        } else{
+            holder.text.setVisibility(View.VISIBLE);
+            holder.text.setText(image.getText());
+        }
     }
 
-    public void setLoadMoreListener(LoadMoreListener loadMoreListener){
+    void setLoadMoreListener(LoadMoreListener loadMoreListener){
         this.loadMoreListener = loadMoreListener;
     }
 

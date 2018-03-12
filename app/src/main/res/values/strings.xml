@@ -30,4 +30,6 @@
     <string name="categories">Categories</string>
     <string name="image_description">Image Description</string>
     <string name="category_name">Category name</string>
+    <string name="share">Share</string>
+    <string name="download">Download</string>
 </resources>

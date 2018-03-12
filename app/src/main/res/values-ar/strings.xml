@@ -20,4 +20,6 @@
     <string name="categories">التصنيفات</string>
     <string name="image_description">وصف الصورة</string>
     <string name="category_name">اسم التصنيف</string>
+    <string name="share">مشاركة</string>
+    <string name="download">تحميل</string>
 </resources>
