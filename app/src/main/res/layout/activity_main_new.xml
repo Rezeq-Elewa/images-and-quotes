@@ -39,7 +39,7 @@
                 android:layout_marginTop="8dp"
                 android:text="@string/app_name"
                 android:textColor="@color/white"
-                android:textSize="20sp"
+                android:textSize="17sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -212,7 +212,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/rate_the_app"
                     android:textColor="@color/white"
-                    android:textSize="18sp" />
+                    android:textSize="16sp" />
             </LinearLayout>
 
             <ImageView
@@ -246,7 +246,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/other_grate_apps"
                     android:textColor="@color/white"
-                    android:textSize="18sp" />
+                    android:textSize="16sp" />
             </LinearLayout>
 
             <ImageView
@@ -272,7 +272,7 @@
                     android:layout_marginEnd="16dp"
                     android:contentDescription="@string/app_name"
                     android:tint="@color/colorAccent"
-                    app:srcCompat="@drawable/external_link" />
+                    android:src="@drawable/category" />
 
                 <com.quotation.quo.quot.CustomTextView
                     android:id="@+id/tv_categories"
@@ -280,7 +280,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/categories"
                     android:textColor="@color/white"
-                    android:textSize="18sp" />
+                    android:textSize="16sp" />
             </LinearLayout>
 
             <LinearLayout

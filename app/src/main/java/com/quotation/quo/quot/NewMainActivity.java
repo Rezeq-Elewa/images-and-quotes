@@ -12,6 +12,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -22,11 +24,6 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,17 +37,14 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
     RecyclerView rvImages , rvCategories;
     AdView adView;
     private InterstitialAd mInterstitialAd;
-    String oldestPostId ;
     ArrayList<Image> images;
     ArrayList<App> apps;
     ArrayList<Section> sections;
     ProgressBar loadMoreProgressBar;
 
-    DatabaseReference imagesDatabaseReference;
-    DatabaseReference appsDatabaseReference;
-    DatabaseReference sectionsDatabaseReference;
-
-    String category = "0";
+    int category = 0;
+    int page = 0;
+    Api api;
 
     boolean isLoading = false;
 
@@ -87,6 +81,8 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
         apps = new ArrayList<>();
         sections = new ArrayList<>();
 
+        api = Api.getInstance();
+
         StaggeredGridLayoutManager layoutManager =  new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         ImagesAdapter adapter = new ImagesAdapter(images , this, "grid");
         adapter.setLoadMoreListener(this);
@@ -96,7 +92,7 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if(llMenu.getVisibility() == View.VISIBLE){
-                    llMenu.setVisibility(View.GONE);
+                    toggleMenu();
                     return true;
                 }
                 return false;
@@ -231,48 +227,39 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
             }
         });
 
-        imagesDatabaseReference = FirebaseDatabase.getInstance().getReference("/images/"+category);
-        appsDatabaseReference = FirebaseDatabase.getInstance().getReference("/apps");
-        sectionsDatabaseReference = FirebaseDatabase.getInstance().getReference("/sections");
-
         new Thread(new Runnable() {
             @Override
             public void run() {
-                appsDatabaseReference.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+                api.getApps(new ApiCallback() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot child : dataSnapshot.getChildren()) {
-                            App app = child.getValue(App.class);
-                            if (app != null) {
-                                apps.add(app);
-                            }
+                    public void onSuccess(Object responseObject) {
+                        AppsResponse response = (AppsResponse) responseObject;
+                        if (response.isStatus()){
+                            apps.addAll(response.getData());
                         }
                     }
 
                     @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        isLoading = false;
+                    public void onFailure(String errorMsg) {
+
                     }
                 });
             }
         }).start();
 
-        sectionsDatabaseReference.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+        api.getCategories(new ApiCallback() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    Section section = child.getValue(Section.class);
-                    if (section != null) {
-                        section.setId(Integer.parseInt(child.getKey()));
-                        sections.add(section);
-                    }
+            public void onSuccess(Object responseObject) {
+                CategoriesResponse response = (CategoriesResponse) responseObject;
+                if (response.isStatus()){
+                    sections.addAll(response.getData());
+                    rvCategories.getAdapter().notifyDataSetChanged();
                 }
-                rvCategories.getAdapter().notifyDataSetChanged();
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-                isLoading = false;
+            public void onFailure(String errorMsg) {
+
             }
         });
     }
@@ -290,34 +277,48 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
             return;
 
         isLoading = true;
-        loadMoreProgressBar.setVisibility(View.VISIBLE);
-        if(imagesDatabaseReference != null){
-            String index = String.valueOf(Integer.parseInt(oldestPostId) + 1);
-            imagesDatabaseReference.orderByKey().startAt(index).limitToFirst(20).addListenerForSingleValueEvent(new ValueEventListener() {
+        page++;
+        if (category == 0){
+            api.getImagesPage(page, new ApiCallback() {
                 @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    for (DataSnapshot child : dataSnapshot.getChildren()) {
-                        oldestPostId = child.getKey(); ////HERE WE ARE SAVING THE LAST POST_ID FROM URS POST
-
-                        Image image = child.getValue(Image.class);
-                        if (image != null) {
-                            image.setId(Integer.parseInt(child.getKey()));
-                        }
-                        images.add(image);
+                public void onSuccess(Object responseObject) {
+                    ImagesResponse response = (ImagesResponse) responseObject;
+                    if (response.isStatus()){
+                        images.addAll(response.getData());
+                        rvImages.getAdapter().notifyDataSetChanged();
+                        isLoading = false;
+                    } else{
+                        isLoading = false;
                     }
-                    isLoading = false;
-                    rvImages.getAdapter().notifyDataSetChanged();
-                    loadMoreProgressBar.setVisibility(View.GONE);
                 }
 
                 @Override
-                public void onCancelled(DatabaseError databaseError) {
+                public void onFailure(String errorMsg) {
+                    Toast.makeText(NewMainActivity.this, errorMsg,Toast.LENGTH_LONG).show();
                     isLoading = false;
-                    loadMoreProgressBar.setVisibility(View.GONE);
+                }
+            });
+        } else {
+            api.getCategoryImagesPage(category,page, new ApiCallback() {
+                @Override
+                public void onSuccess(Object responseObject) {
+                    ImagesResponse response = (ImagesResponse) responseObject;
+                    if (response.isStatus()){
+                        images.addAll(response.getData());
+                        rvImages.getAdapter().notifyDataSetChanged();
+                        isLoading = false;
+                    } else {
+                        isLoading = false;
+                    }
+                }
+
+                @Override
+                public void onFailure(String errorMsg) {
+                    Toast.makeText(NewMainActivity.this, errorMsg,Toast.LENGTH_LONG).show();
+                    isLoading = false;
                 }
             });
         }
-
     }
 
     @SuppressLint("MissingSuperCall")
@@ -334,9 +335,43 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
 
     private void toggleMenu(){
         if(llMenu.getVisibility() == View.GONE){
-            llMenu.setVisibility(View.VISIBLE);
+            Animation slideDown = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_down);
+            slideDown.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                    llMenu.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+            llMenu.startAnimation(slideDown);
         }else{
-            llMenu.setVisibility(View.GONE);
+            Animation slideUp = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_up);
+            slideUp.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    llMenu.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+            llMenu.startAnimation(slideUp);
         }
     }
 
@@ -353,8 +388,9 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
     }
 
     public void sectionClicked(int index){
-        category = String.valueOf(sections.get(index).getId());
-        imagesDatabaseReference = FirebaseDatabase.getInstance().getReference("/images/"+category);
+        category = sections.get(index).getId();
+        page = 0;
+//        imagesDatabaseReference = FirebaseDatabase.getInstance().getReference("/images/"+category);
         readFromDBFirstTime();
         llCategories.performClick();
         ivMenu.performClick();
@@ -362,28 +398,49 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
     }
 
     public void readFromDBFirstTime(){
-        imagesDatabaseReference.orderByKey().startAt("0").limitToFirst(20).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                isLoading = false;
-                images.clear();
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    oldestPostId = child.getKey();
-
-                    Image image = child.getValue(Image.class);
-                    if (image != null) {
-                        image.setId(Integer.parseInt(child.getKey()));
-                        images.add(image);
+        images.clear();
+        if (category == 0){
+            api.getImagesPage(page, new ApiCallback() {
+                @Override
+                public void onSuccess(Object responseObject) {
+                    ImagesResponse response = (ImagesResponse) responseObject;
+                    if (response.isStatus()){
+                        images.addAll(response.getData());
+                        rvImages.getAdapter().notifyDataSetChanged();
+                        isLoading = false;
+                    } else{
+                        isLoading = false;
                     }
                 }
-                rvImages.getAdapter().notifyDataSetChanged();
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                isLoading = false;
-            }
-        });
+                @Override
+                public void onFailure(String errorMsg) {
+                    Toast.makeText(NewMainActivity.this, errorMsg,Toast.LENGTH_LONG).show();
+                    isLoading = false;
+                }
+            });
+        } else {
+            api.getCategoryImagesPage(category, page, new ApiCallback() {
+                @Override
+                public void onSuccess(Object responseObject) {
+                    ImagesResponse response = (ImagesResponse) responseObject;
+                    if (response.isStatus()){
+                        images.addAll(response.getData());
+                        rvImages.getAdapter().notifyDataSetChanged();
+                        isLoading = false;
+                    } else {
+                        isLoading = false;
+                    }
+                }
+
+                @Override
+                public void onFailure(String errorMsg) {
+                    Toast.makeText(NewMainActivity.this, errorMsg,Toast.LENGTH_LONG).show();
+                    isLoading = false;
+                }
+            });
+        }
+
     }
 
 }

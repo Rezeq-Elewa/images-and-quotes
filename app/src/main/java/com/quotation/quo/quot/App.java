@@ -3,26 +3,38 @@ package com.quotation.quo.quot;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by Rezeq on 3/2/2018.
  * Email : rezeq.elewa@gmail.com
  */
 
 public class App implements Parcelable{
-    private String nameEn;
-    private String nameAr;
+
+    @SerializedName("name")
+    private String name;
+
+    @SerializedName("description_en")
     private String descriptionEn;
+
+    @SerializedName("description_ar")
     private String descriptionAr;
+
+    @SerializedName("image")
     private String img;
+
+    @SerializedName("url")
     private String url;
+
+    @SerializedName("package_id")
     private String packageId;
 
     public App() {
     }
 
-    public App(String nameEn, String nameAr, String descriptionEn, String descriptionAr, String img, String url, String packageId) {
-        this.nameEn = nameEn;
-        this.nameAr = nameAr;
+    public App(String name, String descriptionEn, String descriptionAr, String img, String url, String packageId) {
+        this.name = name;
         this.descriptionEn = descriptionEn;
         this.descriptionAr = descriptionAr;
         this.img = img;
@@ -31,8 +43,7 @@ public class App implements Parcelable{
     }
 
     protected App(Parcel in) {
-        nameEn = in.readString();
-        nameAr = in.readString();
+        name = in.readString();
         descriptionEn = in.readString();
         descriptionAr = in.readString();
         img = in.readString();
@@ -42,8 +53,7 @@ public class App implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(nameEn);
-        dest.writeString(nameAr);
+        dest.writeString(name);
         dest.writeString(descriptionEn);
         dest.writeString(descriptionAr);
         dest.writeString(img);
@@ -68,20 +78,12 @@ public class App implements Parcelable{
         }
     };
 
-    public String getNameEn() {
-        return nameEn;
+    public String getName() {
+        return name;
     }
 
-    public void setNameEn(String nameEn) {
-        this.nameEn = nameEn;
-    }
-
-    public String getNameAr() {
-        return nameAr;
-    }
-
-    public void setNameAr(String nameAr) {
-        this.nameAr = nameAr;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescriptionEn() {
@@ -122,14 +124,6 @@ public class App implements Parcelable{
 
     public void setPackageId(String packageId) {
         this.packageId = packageId;
-    }
-
-    public String getName() {
-        if(MyApplication.language.equalsIgnoreCase("ar")){
-            return getNameAr();
-        } else {
-            return getNameEn();
-        }
     }
 
     public String getDescription(){

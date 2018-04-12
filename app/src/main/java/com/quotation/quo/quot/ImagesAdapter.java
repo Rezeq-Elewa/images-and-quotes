@@ -88,7 +88,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.MyViewHold
         }
 
         Glide.with(activity)
-                .load(image.getImageUrl())
+                .load(MyApplication.BASE_URL+image.getImageUrl())
                 .apply(options)
                 .into(holder.image);
 

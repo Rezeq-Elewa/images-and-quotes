@@ -103,7 +103,7 @@ public class ImageDisplayActivity extends AppCompatActivity implements ActivityC
             public void onClick(View view) {
                 menu.close(true);
                 Picasso.with(ImageDisplayActivity.this)
-                        .load(images.get(index).getImageUrl())
+                        .load(MyApplication.BASE_URL + images.get(index).getImageUrl())
                         .into(new Target() {
                             @Override
                             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -128,7 +128,7 @@ public class ImageDisplayActivity extends AppCompatActivity implements ActivityC
             public void onClick(View view) {
                 menu.close(true);
                 Picasso.with(ImageDisplayActivity.this)
-                        .load(images.get(index).getImageUrl())
+                        .load(MyApplication.BASE_URL + images.get(index).getImageUrl())
                         .into(new Target() {
                             @Override
                             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -175,7 +175,7 @@ public class ImageDisplayActivity extends AppCompatActivity implements ActivityC
                 .override(ivImage.getWidth(),0);
 
         Glide.with(this)
-                .load(images.get(index).getImageUrl())
+                .load(MyApplication.BASE_URL + images.get(index).getImageUrl())
                 .apply(options)
                 .into(ivImage);
 

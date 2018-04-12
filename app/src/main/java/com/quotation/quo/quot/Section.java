@@ -1,13 +1,21 @@
 package com.quotation.quo.quot;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by Rezeq on 3/5/2018.
  * Email : rezeq.elewa@gmail.com
  */
 
 public class Section {
+
+    @SerializedName("id")
     private int id;
+
+    @SerializedName("name_ar")
     private String sectionNameAr;
+
+    @SerializedName("name_en")
     private String sectionNameEn;
 
     public Section() {
