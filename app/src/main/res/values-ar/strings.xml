@@ -22,4 +22,5 @@
     <string name="category_name">اسم التصنيف</string>
     <string name="share">مشاركة</string>
     <string name="download">تحميل</string>
+    <string name="no_item">لا يوجد عناصر في هذا التصنيف !</string>
 </resources>

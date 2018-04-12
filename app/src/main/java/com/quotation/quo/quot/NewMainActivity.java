@@ -294,7 +294,11 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
 
                 @Override
                 public void onFailure(String errorMsg) {
-                    Toast.makeText(NewMainActivity.this, errorMsg,Toast.LENGTH_LONG).show();
+                    if (errorMsg.contains("unknown")){
+                        Toast.makeText(NewMainActivity.this, errorMsg,Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(NewMainActivity.this, getText(R.string.no_item),Toast.LENGTH_LONG).show();
+                    }
                     isLoading = false;
                 }
             });
@@ -314,7 +318,11 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
 
                 @Override
                 public void onFailure(String errorMsg) {
-                    Toast.makeText(NewMainActivity.this, errorMsg,Toast.LENGTH_LONG).show();
+                    if (errorMsg.contains("unknown")){
+                        Toast.makeText(NewMainActivity.this, errorMsg,Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(NewMainActivity.this, getText(R.string.no_item),Toast.LENGTH_LONG).show();
+                    }
                     isLoading = false;
                 }
             });
@@ -415,7 +423,11 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
 
                 @Override
                 public void onFailure(String errorMsg) {
-                    Toast.makeText(NewMainActivity.this, errorMsg,Toast.LENGTH_LONG).show();
+                    if (errorMsg.contains("unknown")){
+                        Toast.makeText(NewMainActivity.this, errorMsg,Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(NewMainActivity.this, getText(R.string.no_item),Toast.LENGTH_LONG).show();
+                    }
                     isLoading = false;
                 }
             });
@@ -435,7 +447,11 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
 
                 @Override
                 public void onFailure(String errorMsg) {
-                    Toast.makeText(NewMainActivity.this, errorMsg,Toast.LENGTH_LONG).show();
+                    if (errorMsg.contains("unknown")){
+                        Toast.makeText(NewMainActivity.this, errorMsg,Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(NewMainActivity.this, getText(R.string.no_item),Toast.LENGTH_LONG).show();
+                    }
                     isLoading = false;
                 }
             });
