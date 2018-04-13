@@ -1,11 +1,12 @@
 package com.quotation.quo.quot;
 
+import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MotionEvent;
@@ -30,6 +31,9 @@ public class AppsActivity extends AppCompatActivity {
 
     ArrayList<App> apps;
 
+    boolean isInTransition = false;
+
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,7 +47,7 @@ public class AppsActivity extends AppCompatActivity {
         rvApps = findViewById(R.id.rv_apps);
         adView = findViewById(R.id.adView);
 
-        llMenu.setVisibility(View.GONE);
+        llMenu.setVisibility(View.INVISIBLE);
 
         apps = new ArrayList<>();
         if (getIntent().getExtras() != null){
@@ -95,7 +99,7 @@ public class AppsActivity extends AppCompatActivity {
                     startActivity(new Intent(Intent.ACTION_VIEW,
                             Uri.parse("http://play.google.com/store/apps/details?id=" + AppsActivity.this.getPackageName())));
                 }
-                llMenu.setVisibility(View.GONE);
+                toggleMenu();
             }
         });
 
@@ -105,7 +109,7 @@ public class AppsActivity extends AppCompatActivity {
                 Intent intent = new Intent(AppsActivity.this, AppsActivity.class);
                 intent.putExtra("apps", apps);
                 startActivity(intent);
-                llMenu.setVisibility(View.GONE);
+                toggleMenu();
             }
         });
     }
@@ -130,17 +134,20 @@ public class AppsActivity extends AppCompatActivity {
     }
 
     private void toggleMenu(){
-        if(llMenu.getVisibility() == View.GONE){
+        if (isInTransition)
+            return;
+        if(llMenu.getVisibility() != View.VISIBLE){
             Animation slideDown = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_down);
             slideDown.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
+                    isInTransition = true;
                     llMenu.setVisibility(View.VISIBLE);
                 }
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
-
+                    isInTransition = false;
                 }
 
                 @Override
@@ -154,12 +161,13 @@ public class AppsActivity extends AppCompatActivity {
             slideUp.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
-
+                    isInTransition = true;
                 }
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     llMenu.setVisibility(View.GONE);
+                    isInTransition = false;
                 }
 
                 @Override
