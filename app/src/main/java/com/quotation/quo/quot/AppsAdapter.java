@@ -53,7 +53,7 @@ public class AppsAdapter extends RecyclerView.Adapter<AppsAdapter.MyViewHolder> 
         holder.title.setText(app.getName());
         holder.description.setText(app.getDescription());
         Picasso.with(activity)
-                .load(app.getImg())
+                .load(MyApplication.BASE_URL + app.getImg())
                 .placeholder(R.color.white)
                 .into(holder.image);
 
