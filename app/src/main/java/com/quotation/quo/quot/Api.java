@@ -35,8 +35,8 @@ public class Api {
         return instance;
     }
 
-    public void getImagesPage(int page, final ApiCallback callback) {
-        Call<ImagesResponse> mCall = client.allImagesPage(page);
+    public void getImagesPage(int page, String order, final ApiCallback callback) {
+        Call<ImagesResponse> mCall = client.allImagesPage(page, order);
         mCall.enqueue(new Callback<ImagesResponse>() {
             @Override
             public void onResponse(@NonNull Call<ImagesResponse> call, @NonNull Response<ImagesResponse> response) {
@@ -55,8 +55,8 @@ public class Api {
         });
     }
 
-    public void getCategoryImagesPage(int categoryId, int page, final ApiCallback callback) {
-        Call<ImagesResponse> mCall = client.categoryImagesPage(categoryId,page);
+    public void getCategoryImagesPage(int categoryId, int page, String order, final ApiCallback callback) {
+        Call<ImagesResponse> mCall = client.categoryImagesPage(categoryId, page, order);
         mCall.enqueue(new Callback<ImagesResponse>() {
             @Override
             public void onResponse(@NonNull Call<ImagesResponse> call, @NonNull Response<ImagesResponse> response) {

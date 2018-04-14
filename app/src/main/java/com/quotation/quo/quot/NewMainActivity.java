@@ -26,8 +26,6 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 public class NewMainActivity extends AppCompatActivity implements LoadMoreListener {
 
@@ -44,6 +42,8 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
 
     int category = 0;
     int page = 0;
+    String order = "newest";
+    String viewType = "grid";
     Api api;
 
     boolean isLoading = false;
@@ -85,7 +85,7 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
         api = Api.getInstance();
 
         StaggeredGridLayoutManager layoutManager =  new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        ImagesAdapter adapter = new ImagesAdapter(images , this, "grid");
+        ImagesAdapter adapter = new ImagesAdapter(images , this, viewType);
         adapter.setLoadMoreListener(this);
         rvImages.setLayoutManager(layoutManager);
         rvImages.setAdapter(adapter);
@@ -159,8 +159,11 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
         ivGrid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (viewType.equals("grid"))
+                    return;
+                viewType = "grid";
                 rvImages.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
-                ImagesAdapter adapter = new ImagesAdapter(images , NewMainActivity.this, "grid");
+                ImagesAdapter adapter = new ImagesAdapter(images , NewMainActivity.this, viewType);
                 adapter.setLoadMoreListener(NewMainActivity.this);
                 rvImages.setAdapter(adapter);
                 rvImages.getLayoutManager().smoothScrollToPosition(rvImages, null , 0);
@@ -170,8 +173,11 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
         ivList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (viewType.equals("list"))
+                    return;
+                viewType = "list";
                 rvImages.setLayoutManager(new LinearLayoutManager(NewMainActivity.this,LinearLayout.VERTICAL,false));
-                ImagesAdapter adapter = new ImagesAdapter(images , NewMainActivity.this, "list");
+                ImagesAdapter adapter = new ImagesAdapter(images , NewMainActivity.this, viewType);
                 adapter.setLoadMoreListener(NewMainActivity.this);
                 rvImages.setAdapter(adapter);
                 rvImages.getLayoutManager().smoothScrollToPosition(rvImages, null , 0);
@@ -181,37 +187,36 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
         tvNewest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Collections.sort(images, new Comparator<Image>() {
-                    @Override
-                    public int compare(Image image1, Image image2) {
-                        return image2.getId() - image1.getId();
-                    }
-                });
-                rvImages.getAdapter().notifyDataSetChanged();
-                rvImages.getLayoutManager().smoothScrollToPosition(rvImages, null , 0);
+                if (order.equals("newest")){
+                    return;
+                }
+                order = "newest";
+                page = 0;
+                readFromDBFirstTime();
             }
         });
 
         tvOldest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Collections.sort(images, new Comparator<Image>() {
-                    @Override
-                    public int compare(Image image1, Image image2) {
-                        return image1.getId() - image2.getId();
-                    }
-                });
-                rvImages.getAdapter().notifyDataSetChanged();
-                rvImages.getLayoutManager().smoothScrollToPosition(rvImages, null , 0);
+                if (order.equals("oldest")){
+                    return;
+                }
+                order = "oldest";
+                page = 0;
+                readFromDBFirstTime();
             }
         });
 
         tvRandom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Collections.shuffle(images);
-                rvImages.getAdapter().notifyDataSetChanged();
-                rvImages.getLayoutManager().smoothScrollToPosition(rvImages, null , 0);
+                if (order.equals("random")){
+                    return;
+                }
+                order = "random";
+                page = 0;
+                readFromDBFirstTime();
             }
         });
 
@@ -263,13 +268,14 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
 
             }
         });
+
+        isLoading = true;
+        readFromDBFirstTime();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        isLoading = true;
-        readFromDBFirstTime();
     }
 
     @Override
@@ -280,7 +286,7 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
         isLoading = true;
         page++;
         if (category == 0){
-            api.getImagesPage(page, new ApiCallback() {
+            api.getImagesPage(page, order, new ApiCallback() {
                 @Override
                 public void onSuccess(Object responseObject) {
                     ImagesResponse response = (ImagesResponse) responseObject;
@@ -304,7 +310,7 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
                 }
             });
         } else {
-            api.getCategoryImagesPage(category,page, new ApiCallback() {
+            api.getCategoryImagesPage(category, page, order, new ApiCallback() {
                 @Override
                 public void onSuccess(Object responseObject) {
                     ImagesResponse response = (ImagesResponse) responseObject;
@@ -404,23 +410,25 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
     public void sectionClicked(int index){
         category = sections.get(index).getId();
         page = 0;
-//        imagesDatabaseReference = FirebaseDatabase.getInstance().getReference("/images/"+category);
         readFromDBFirstTime();
         llCategories.performClick();
         ivMenu.performClick();
-        rvImages.getLayoutManager().smoothScrollToPosition(rvImages, null, 0);
     }
 
     public void readFromDBFirstTime(){
         images.clear();
         if (category == 0){
-            api.getImagesPage(page, new ApiCallback() {
+            api.getImagesPage(page, order, new ApiCallback() {
                 @Override
                 public void onSuccess(Object responseObject) {
                     ImagesResponse response = (ImagesResponse) responseObject;
                     if (response.isStatus()){
                         images.addAll(response.getData());
+//                        ImagesAdapter adapter = new ImagesAdapter(images , NewMainActivity.this, viewType);
+//                        adapter.setLoadMoreListener(NewMainActivity.this);
+//                        rvImages.setAdapter(adapter);
                         rvImages.getAdapter().notifyDataSetChanged();
+                        rvImages.getLayoutManager().smoothScrollToPosition(rvImages,null,0);
                         isLoading = false;
                     } else{
                         isLoading = false;
@@ -438,13 +446,17 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
                 }
             });
         } else {
-            api.getCategoryImagesPage(category, page, new ApiCallback() {
+            api.getCategoryImagesPage(category, page, order, new ApiCallback() {
                 @Override
                 public void onSuccess(Object responseObject) {
                     ImagesResponse response = (ImagesResponse) responseObject;
                     if (response.isStatus()){
                         images.addAll(response.getData());
+//                        ImagesAdapter adapter = new ImagesAdapter(images , NewMainActivity.this, viewType);
+//                        adapter.setLoadMoreListener(NewMainActivity.this);
+//                        rvImages.setAdapter(adapter);
                         rvImages.getAdapter().notifyDataSetChanged();
+                        rvImages.getLayoutManager().smoothScrollToPosition(rvImages,null,0);
                         isLoading = false;
                     } else {
                         isLoading = false;
