@@ -33,4 +33,8 @@
     <string name="share">Share</string>
     <string name="download">Download</string>
     <string name="no_item">There is no item in this category !</string>
+    <string name="connection_error">Connection Error</string>
+    <string name="check_connection">Please check your internet connection !</string>
+    <string name="failed_to_get_data">Failed to get data! ..</string>
+    <string name="try_again">Try again</string>
 </resources>

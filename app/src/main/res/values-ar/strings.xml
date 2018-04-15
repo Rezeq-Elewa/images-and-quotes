@@ -23,4 +23,8 @@
     <string name="share">مشاركة</string>
     <string name="download">تحميل</string>
     <string name="no_item">لا يوجد عناصر في هذا التصنيف !</string>
+    <string name="connection_error">خطأ في الاتصال</string>
+    <string name="check_connection">الرجاء التأكد من اتصال الانترنت</string>
+    <string name="failed_to_get_data">فشل جلب البيانات ..</string>
+    <string name="try_again">أعد المحاولة</string>
 </resources>

@@ -62,11 +62,11 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:contentDescription="@string/app_name"
             android:id="@+id/display_list"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginStart="16dp"
+            android:contentDescription="@string/app_name"
             android:tint="@color/colorAccent"
             app:layout_constraintBottom_toBottomOf="@+id/customTextView"
             app:layout_constraintStart_toEndOf="@+id/customTextView"
@@ -84,6 +84,31 @@
             app:layout_constraintStart_toEndOf="@+id/display_list"
             app:layout_constraintTop_toTopOf="@+id/customTextView"
             app:srcCompat="@drawable/grid_view" />
+
+        <com.quotation.quo.quot.CustomTextView
+            android:id="@+id/category_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="@string/category_name"
+            android:textColor="@color/cardview_light_background"
+            android:textSize="16sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/customTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/close_category"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="2dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/category_name"
+            app:layout_constraintEnd_toStartOf="@+id/category_name"
+            app:layout_constraintTop_toTopOf="@+id/category_name"
+            app:srcCompat="@drawable/delete_button" />
 
         <ProgressBar
             android:id="@+id/load_more_progress_bar"
@@ -107,7 +132,76 @@
             app:layout_constraintBottom_toTopOf="@+id/load_more_progress_bar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/customTextView"/>
+            app:layout_constraintTop_toBottomOf="@+id/customTextView" >
+
+        </android.support.v7.widget.RecyclerView>
+
+        <ProgressBar
+            android:id="@+id/pb_loading"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@+id/load_more_progress_bar"
+            app:layout_constraintEnd_toEndOf="@+id/rv_list"
+            app:layout_constraintStart_toStartOf="@+id/rv_list"
+            app:layout_constraintTop_toTopOf="@+id/rv_list" />
+
+        <LinearLayout
+            android:id="@+id/ll_error"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="40dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/background_menu"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/rv_list"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.quotation.quo.quot.CustomTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="@string/connection_error"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
+
+            <com.quotation.quo.quot.CustomTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/failed_to_get_data"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+
+            <com.quotation.quo.quot.CustomTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/check_connection"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+
+            <com.quotation.quo.quot.CustomTextView
+                android:id="@+id/tv_try_again"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="@string/try_again"
+                android:textAlignment="center"
+                android:textColor="@color/colorAccent"
+                android:textSize="16sp" />
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/ll_buttons"
@@ -159,8 +253,8 @@
             android:id="@+id/linearLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:gravity="center"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
@@ -174,8 +268,9 @@
                 ads:adUnitId="@string/main_activity_ad_unit_id"
                 ads:layout_constraintBottom_toBottomOf="parent"
                 ads:layout_constraintEnd_toEndOf="parent"
-                ads:layout_constraintStart_toStartOf="parent"/>
+                ads:layout_constraintStart_toStartOf="parent" />
         </LinearLayout>
+
         <LinearLayout
             android:id="@+id/ll_menu"
             android:layout_width="wrap_content"
@@ -214,13 +309,13 @@
             </LinearLayout>
 
             <ImageView
-                android:contentDescription="@string/app_name"
                 android:id="@+id/imageView2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"
                 android:alpha="0.7"
+                android:contentDescription="@string/app_name"
                 app:srcCompat="@color/colorAccent" />
 
             <LinearLayout
@@ -248,13 +343,13 @@
             </LinearLayout>
 
             <ImageView
-                android:contentDescription="@string/app_name"
                 android:id="@+id/imageView3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"
                 android:alpha="0.7"
+                android:contentDescription="@string/app_name"
                 app:srcCompat="@color/colorAccent" />
 
             <LinearLayout
@@ -269,8 +364,8 @@
                     android:layout_height="24dp"
                     android:layout_marginEnd="16dp"
                     android:contentDescription="@string/app_name"
-                    android:tint="@color/colorAccent"
-                    android:src="@drawable/category" />
+                    android:src="@drawable/category"
+                    android:tint="@color/colorAccent" />
 
                 <com.quotation.quo.quot.CustomTextView
                     android:id="@+id/tv_categories"
@@ -285,15 +380,15 @@
                 android:id="@+id/ll_rv_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginStart="48dp"
-                android:layout_marginTop="8dp">
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/rv_categories"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"/>
+                    android:visibility="gone" />
             </LinearLayout>
 
         </LinearLayout>
