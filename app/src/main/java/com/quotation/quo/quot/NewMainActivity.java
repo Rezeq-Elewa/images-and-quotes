@@ -35,14 +35,14 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
     RecyclerView rvImages, rvCategories;
     AdView adView;
     private InterstitialAd mInterstitialAd;
-    ArrayList<Image> images;
+    static ArrayList<Image> images;
     ArrayList<App> apps;
     ArrayList<Section> sections;
     ProgressBar loadMoreProgressBar, pbLoading;
 
-    int category = 0;
-    int page = 0;
-    String order = "newest";
+    static int category = 0;
+    static int page = 0;
+    static String order = "random";
     String viewType = "grid";
     Api api;
 
@@ -228,9 +228,6 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
         tvRandom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (order.equals("random")) {
-                    return;
-                }
                 order = "random";
                 page = 0;
                 readFromDBFirstTime();
@@ -440,25 +437,27 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
         readFromDBFirstTime();
         llCategories.performClick();
         ivMenu.performClick();
-        if (category == 0) {
-            selectedCategoryName.setVisibility(View.GONE);
-            closeCategory.setVisibility(View.GONE);
-        } else {
-            selectedCategoryName.setText(sections.get(index).getSectionName());
-            selectedCategoryName.setVisibility(View.VISIBLE);
-            closeCategory.setVisibility(View.VISIBLE);
-        }
     }
 
     public void closeSection() {
         category = 0;
         page = 0;
         readFromDBFirstTime();
+    }
+
+    private void setSelectedCategoryName() {
+        String categoryName = "";
+        for (Section section:sections){
+            if (section.getId() == category){
+                categoryName = section.getSectionName();
+                break;
+            }
+        }
         if (category == 0) {
             selectedCategoryName.setVisibility(View.GONE);
             closeCategory.setVisibility(View.GONE);
         } else {
-            selectedCategoryName.setText(sections.get(0).getSectionName());
+            selectedCategoryName.setText(categoryName);
             selectedCategoryName.setVisibility(View.VISIBLE);
             closeCategory.setVisibility(View.VISIBLE);
         }
@@ -483,6 +482,7 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
 //                        rvImages.setAdapter(adapter);
                         rvImages.getAdapter().notifyDataSetChanged();
                         rvImages.getLayoutManager().smoothScrollToPosition(rvImages, null, 0);
+                        setSelectedCategoryName();
                         isLoading = false;
                     } else {
                         isLoading = false;
@@ -514,6 +514,7 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
 //                        rvImages.setAdapter(adapter);
                         rvImages.getAdapter().notifyDataSetChanged();
                         rvImages.getLayoutManager().smoothScrollToPosition(rvImages, null, 0);
+                        setSelectedCategoryName();
                         isLoading = false;
                     } else {
                         isLoading = false;

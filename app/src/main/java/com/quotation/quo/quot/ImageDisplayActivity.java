@@ -6,13 +6,13 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -35,12 +35,14 @@ import java.util.Calendar;
 
 public class ImageDisplayActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback{
 
-    int index;
+    int index, page, category;
+    String order;
     ArrayList<Image> images;
     ImageView ivImage, ivBack, ivNext;
     CustomTextView tvDescription;
     AdView adView;
     FloatingActionMenu menu;
+    Api api;
     com.github.clans.fab.FloatingActionButton fabDownload, fabShare;
 
     @Override
@@ -49,9 +51,11 @@ public class ImageDisplayActivity extends AppCompatActivity implements ActivityC
         setContentView(R.layout.activity_image_desplay);
 
         Bundle args = getIntent().getExtras();
-        images = new ArrayList<>();
+        images = NewMainActivity.images;
+        page = NewMainActivity.page;
+        category = NewMainActivity.category;
+        order = NewMainActivity.order;
         if (args != null) {
-            images = args.getParcelableArrayList("images");
             index = args.getInt("index", 0);
         }
         ivImage = findViewById(R.id.iv_image);
@@ -76,7 +80,6 @@ public class ImageDisplayActivity extends AppCompatActivity implements ActivityC
                 ivNext.setEnabled(false);
                 index++;
                 Intent intent = new Intent(ImageDisplayActivity.this, ImageDisplayActivity.class);
-                intent.putExtra("images",images);
                 intent.putExtra("index",index);
                 startActivity(intent);
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
@@ -90,7 +93,6 @@ public class ImageDisplayActivity extends AppCompatActivity implements ActivityC
                 ivBack.setEnabled(false);
                 index--;
                 Intent intent = new Intent(ImageDisplayActivity.this, ImageDisplayActivity.class);
-                intent.putExtra("images",images);
                 intent.putExtra("index",index);
                 startActivity(intent);
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
@@ -157,6 +159,47 @@ public class ImageDisplayActivity extends AppCompatActivity implements ActivityC
             }
         });
 
+        checkLoadMore();
+    }
+
+    private void checkLoadMore() {
+        if (index == images.size()-2 ){
+            if (images.size() % 20 != 0)
+                return;
+            api = Api.getInstance();
+            page++;
+            if (category == 0) {
+                api.getImagesPage(page, order, new ApiCallback() {
+                    @Override
+                    public void onSuccess(Object responseObject) {
+                        ImagesResponse response = (ImagesResponse) responseObject;
+                        if (response.isStatus()) {
+                            images.addAll(response.getData());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(String errorMsg) {
+
+                    }
+                });
+            } else {
+                api.getCategoryImagesPage(category, page, order, new ApiCallback() {
+                    @Override
+                    public void onSuccess(Object responseObject) {
+                        ImagesResponse response = (ImagesResponse) responseObject;
+                        if (response.isStatus()) {
+                            images.addAll(response.getData());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(String errorMsg) {
+
+                    }
+                });
+            }
+        }
     }
 
     @Override
