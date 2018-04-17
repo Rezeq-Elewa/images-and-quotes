@@ -222,7 +222,7 @@
                 android:padding="8dp"
                 android:text="@string/random"
                 android:textAlignment="center"
-                android:textColor="@color/white" />
+                android:textColor="@color/colorAccent" />
 
             <com.quotation.quo.quot.CustomTextView
                 android:id="@+id/tv_oldest"

@@ -210,6 +210,12 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
                 order = "newest";
                 page = 0;
                 readFromDBFirstTime();
+                tvRandom.setTextColor(getResources().getColor(R.color.white));
+//                tvRandom.setBackground(getResources().getDrawable(R.drawable.text_background));
+                tvNewest.setTextColor(getResources().getColor(R.color.colorAccent));
+//                tvNewest.setBackground(getResources().getDrawable(R.drawable.background_selected_button));
+                tvOldest.setTextColor(getResources().getColor(R.color.white));
+//                tvOldest.setBackground(getResources().getDrawable(R.drawable.text_background));
             }
         });
 
@@ -222,6 +228,12 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
                 order = "oldest";
                 page = 0;
                 readFromDBFirstTime();
+                tvRandom.setTextColor(getResources().getColor(R.color.white));
+//                tvRandom.setBackground(getResources().getDrawable(R.drawable.text_background));
+                tvNewest.setTextColor(getResources().getColor(R.color.white));
+//                tvNewest.setBackground(getResources().getDrawable(R.drawable.text_background));
+                tvOldest.setTextColor(getResources().getColor(R.color.colorAccent));
+//                tvOldest.setBackground(getResources().getDrawable(R.drawable.background_selected_button));
             }
         });
 
@@ -231,6 +243,12 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
                 order = "random";
                 page = 0;
                 readFromDBFirstTime();
+                tvRandom.setTextColor(getResources().getColor(R.color.colorAccent));
+//                tvRandom.setBackground(getResources().getDrawable(R.drawable.background_selected_button));
+                tvNewest.setTextColor(getResources().getColor(R.color.white));
+//                tvNewest.setBackground(getResources().getDrawable(R.drawable.text_background));
+                tvOldest.setTextColor(getResources().getColor(R.color.white));
+//                tvOldest.setBackground(getResources().getDrawable(R.drawable.text_background));
             }
         });
 
