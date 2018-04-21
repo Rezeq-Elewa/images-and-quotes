@@ -6,10 +6,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -45,6 +47,7 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
     static String order = "random";
     String viewType = "grid";
     Api api;
+    AdRequest request;
 
     boolean isLoading = false;
     boolean isInTransition = false;
@@ -387,7 +390,7 @@ public class NewMainActivity extends AppCompatActivity implements LoadMoreListen
     @Override
     protected void onResume() {
         super.onResume();
-        adView.loadAd(new AdRequest.Builder().build());
+        adView.loadAd(request);
     }
 
     private void toggleMenu() {

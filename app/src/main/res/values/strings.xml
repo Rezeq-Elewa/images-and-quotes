@@ -8,10 +8,10 @@
 
     <!-- TODO: change this to real ids -->
     <string name="admob_app_id" translatable="false">ca-app-pub-4123514517726578~5581013211</string>
-    <string name="main_activity_ad_unit_id" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="image_activity_ad_unit_id" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="apps_activity_ad_unit_id" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="interstitial_ad_unit_id" translatable="false">ca-app-pub-3940256099942544/1033173712</string>
+    <string name="main_activity_ad_unit_id" translatable="false">ca-app-pub-4123514517726578/7652588882</string>
+    <string name="image_activity_ad_unit_id" translatable="false">ca-app-pub-4123514517726578/6838200663</string>
+    <string name="apps_activity_ad_unit_id" translatable="false">ca-app-pub-4123514517726578/5134290657</string>
+    <string name="interstitial_ad_unit_id" translatable="false">ca-app-pub-4123514517726578/5573220452</string>
 
     <string name="other_apps">Other Apps</string>
     <string name="application_name">Application name</string>
